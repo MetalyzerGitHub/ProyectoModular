@@ -28,14 +28,22 @@ CREATE TABLE juegos (
 	descripcion TEXT
 );
 
-CREATE TABLE intentos(
-	id_intento INT AUTO_INCREMENT PRIMARY KEY,
-    fk_usuario INT REFERENCES usuario(id_usuario),
-    fk_palabra INT REFERENCES words(id_palabra),
-    fk_juego INT REFERENCES juegos(id_juego),
-    correcto BOOL NOT NULL,
+CREATE TABLE intentos (
+    id_intento INT AUTO_INCREMENT PRIMARY KEY,
+    fk_usuario INT NOT NULL,
+    fk_palabra INT NOT NULL,
+    fk_juego INT NOT NULL,
+    correcto BOOLEAN NOT NULL,
     tiempo INT,
     numero_intentos INT,
-    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    CONSTRAINT fk_intentos_usuario
+        FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario),
+
+    CONSTRAINT fk_intentos_palabra
+        FOREIGN KEY (fk_palabra) REFERENCES words(id_word),
+
+    CONSTRAINT fk_intentos_juego
+        FOREIGN KEY (fk_juego) REFERENCES juegos(id_juego)
+) ENGINE=InnoDB;
