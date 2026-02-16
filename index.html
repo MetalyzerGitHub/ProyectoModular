@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>LexiQuest</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <div class="nav">
+        <div class="left-nav">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <h1>LexiQuest</h1>
+        </div>
+
+        <div id="authButtons">
+            <button onclick="showLogin()">Iniciar Sesión</button>
+            <button onclick="showRegister()">Crear Cuenta</button>
+        </div>
+    </div>
+</header>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+    <button class="close-btn" onclick="toggleSidebar()">✖</button>
+    <ul>
+        <li onclick="goHome()">🏠 Inicio</li>
+        <li>📊 Mi Progreso</li>
+        <li onclick="openActivities()">🎮 Actividades</li>
+        <li>⚙ Configuración</li>
+    </ul>
+</div>
+
+<section id="welcomeSection">
+    <img src="Pictures/Foto_p.jpg" alt="Bienvenida a LexiQuest" class="welcome-img">
+</section>
+
+<section id="login">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="loginUser" placeholder="Usuario">
+    <input type="password" id="loginPass" placeholder="Contraseña">
+    <button onclick="login()">Entrar</button>
+</section>
+
+<section id="register">
+    <h2>Crear Cuenta</h2>
+    <input type="text" id="registerUser" placeholder="Nuevo usuario">
+    <input type="password" id="registerPass" placeholder="Contraseña">
+    <button onclick="register()">Crear</button>
+</section>
+
+<section id="dashboard">
+    <h2>Panel Principal</h2>
+    <p id="welcome"></p>
+    <button onclick="startQuiz()">Iniciar Actividad</button>
+</section>
+
+<section id="quiz">
+    <h2>Actividad</h2>
+    <p id="question"></p>
+    <div id="options"></div>
+    <p id="result"></p>
+    <button onclick="nextQuestion()">Siguiente</button>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
