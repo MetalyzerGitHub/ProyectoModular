@@ -1,0 +1,238 @@
+/* ===== ESTILOS COMPARTIDOS ===== */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(145deg, #f9f0e7 0%, #d9e2f0 100%);
+}
+
+/* Nombre de la página */
+.brand-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(130deg, #162b3a, #203a60);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.brand-title i {
+    background: linear-gradient(145deg,#1b2f4f,#2c4b6e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* Barra superior */
+.top-bar {
+    padding: 1% 2%;
+    margin: 0;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 2.5rem 1rem 2.5rem 1rem;
+    box-shadow: 0 25px 45px -12px rgba(0, 40, 80, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Botones principales */
+.btn-registro, .btn-iniciar {
+    background: #1b2f4f;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.8rem;
+    border-radius: 40px;
+    transition: all 0.2s ease;
+    letter-spacing: -0.01em;
+}
+
+.btn-registro:hover, .btn-iniciar:hover {
+    background: #254b6d;
+    transform: scale(1.02);
+    color: #fff;
+    box-shadow: 0 8px 18px -6px #1b2f4f80;
+}
+
+.btn-iniciar {
+    background: #1b3b4f;
+    width: 100%;
+    padding: 0.75rem;
+}
+
+.btn-iniciar:hover {
+    background: #0f2c3f;
+}
+
+/* Enlaces de registro */
+.link-registro {
+    color: #1b2f4f;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1.5px dotted #1b2f4f80;
+    cursor: pointer;
+}
+
+.link-registro:hover {
+    color: #254b6d;
+    border-bottom: 1.5px solid #254b6d;
+}
+
+/* ===== ESTILOS ESPECÍFICOS DEL LOGIN ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2.5rem 1rem 2.5rem 1rem;
+    text-align: center;
+    box-shadow: 0 25px 45px -12px rgba(0, 40, 80, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.left-image {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0, 20, 40, 0.15));
+}
+
+.form-control-custom {
+    border-radius: 50px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.75rem 1.5rem !important;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.form-control-custom:focus {
+    border-color: #1b2f4f80;
+    box-shadow: 0 0 0 4px rgba(27, 47, 79, 0.15);
+    outline: none;
+}
+
+.descripcion {
+    font-size: 1.1rem;
+    color: #1f2e44;
+    background: rgba(255,255,255,0.5);
+    padding: 0.8rem 1.5rem;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+    display: inline-block;
+}
+
+.registro-link {
+    font-size: 0.95rem;
+    color: #2b3e5a;
+}
+
+.content-wrapper {
+    padding: 1.5rem 2rem 3rem 2rem;
+}
+
+.decor-dot {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,240,210,0.4), transparent 70%);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 50%;
+}
+
+/* ===== ESTILOS DEL MODAL ===== */
+.modal-content-custom {
+    border-radius: 30px;
+    border: none;
+    box-shadow: 0 30px 50px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.modal-header-custom {
+    border-bottom: 2px solid #f0f0f0;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    background: transparent;
+}
+
+.modal-title-custom {
+    font-weight: 700;
+    color: #1b2f4f;
+    font-size: 1.8rem;
+}
+
+.modal-body-custom {
+    padding: 2rem 1.5rem;
+}
+
+.btn-close-custom {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #1b2f4f;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-close-custom:hover {
+    opacity: 1;
+}
+
+.btn-registro-modal {
+    background: #1b2f4f;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.btn-registro-modal:hover {
+    background: #254b6d;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(27, 47, 79, 0.3);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-window {
+    width: 90%;
+    max-width: 450px;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

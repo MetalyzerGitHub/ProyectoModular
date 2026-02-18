@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · LexiQuest</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="container-fluid px-0">
+        <!-- BARRA SUPERIOR -->
+        <div class="top-bar d-flex flex-wrap align-items-center justify-content-between">
+            <span class="brand-title">LexiQuest</span>
+            
+            <!-- Menú desplegable de usuario -->
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-button" id="userMenuButton">
+                    <span class="user-name" id="displayUserName">{{ usuario }}</span>
+                    <i class="fas fa-bars menu-icon"></i>
+                </div>
+                <div class="menu-desplegable" id="menuDesplegable">
+                    <div class="menu-item" id="miCuenta">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Mi cuenta</span>
+                    </div>
+                    <div class="menu-divider"></div>
+                    <div class="menu-item" id="cerrarSesion">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUERPO PRINCIPAL -->
+        <div class="content-wrapper">
+            <!-- Cabecera del dashboard -->
+            <div class="dashboard-header mb-5">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="nivel-badge">
+                        <i class="fas fa-star me-2"></i>Nivel <span id="nivelUsuario">3</span>
+                    </div>
+                    <div class="progress-container" style="min-width: 200px;">
+                        <div class="progress-bar-custom" id="barraProgreso" style="width: 65%;"></div>
+                    </div>
+                    <span class="text-secondary" id="progresoTexto">65% al Nivel 4</span>
+                </div>
+                <button class="btn btn-leccion" id="leccionRapida">
+                    <i class="fas fa-bolt me-2"></i>Lección Rápida
+                </button>
+            </div>
+
+            <h3 class="mb-4" style="color: #1b2f4f; font-weight: 600;">
+                <i class="fas fa-gamepad me-2"></i>Actividades disponibles
+            </h3>
+
+            <!-- Grid de tarjetas -->
+            <div class="row g-4">
+                <!-- Tarjeta 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="glass-card">
+                        <div class="actividad-imagen">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <h4 class="actividad-titulo">Hangman</h4>
+                        <div class="descripcion mb-4">
+                            Adivina la palabra: selecciona las letras correctas.
+                        </div>
+                        <button class="btn btn-comenzar" onclick="window.location.href='/hangman'">
+                            Comenzar <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="glass-card">
+                        <div class="actividad-imagen">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h4 class="actividad-titulo">Match</h4>
+                        <div class="descripcion mb-4">
+                            Relaciona las palabras correctamente.
+                        </div>
+                        <button class="btn btn-comenzar" onclick="window.location.href='/match'">
+                            Comenzar <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="glass-card">
+                        <div class="actividad-imagen">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h4 class="actividad-titulo">Quiz</h4>
+                        <div class="descripcion mb-4">
+                            Selecciona la palabra correcta.
+                        </div>
+                        <button class="btn btn-comenzar" onclick="window.location.href='/quiz'">
+                            Comenzar <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="glass-card">
+                        <div class="actividad-imagen">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h4 class="actividad-titulo">Word Scramble</h4>
+                        <div class="descripcion mb-4">
+                            Reordena las letras.
+                        </div>
+                        <button class="btn btn-comenzar" onclick="window.location.href='/scramble'">
+                            Comenzar <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 text-center text-secondary">
+                <i class="fas fa-lightbulb me-2"></i>
+                <span id="mensajeBienvenida"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
