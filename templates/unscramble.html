@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unscramble · LexiQuest</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* ===== ESTILOS DEL MENÚ DE USUARIO ===== */
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-menu-button {
+            background: rgba(27, 47, 79, 0.1);
+            border: 2px solid rgba(27, 47, 79, 0.2);
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .user-menu-button:hover {
+            background: rgba(27, 47, 79, 0.2);
+            border-color: rgba(27, 47, 79, 0.3);
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1b2f4f;
+            font-size: 1rem;
+        }
+
+        .menu-icon {
+            color: #1b2f4f;
+            font-size: 1.2rem;
+        }
+
+        .menu-desplegable {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.5);
+            overflow: hidden;
+        }
+
+        .menu-desplegable.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1b2f4f;
+            font-weight: 500;
+            transition: background 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: #f0f5fa;
+        }
+
+        .menu-item i {
+            width: 20px;
+            color: #2c4b6e;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: #e0e8f0;
+            margin: 0;
+        }
+
+        /* ===== ESTILOS ESPECÍFICOS PARA UNSCRAMBLE ===== */
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(145deg, #f9f0e7 0%, #d9e2f0 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 40, 80, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        h2 {
+            color: #1b2f4f;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 i {
+            color: #2c4b6e;
+            margin-right: 10px;
+        }
+
+        .attempts-badge {
+            background: #1b2f4f;
+            color: white;
+            padding: 0.6rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin: 1rem auto;
+            box-shadow: 0 8px 18px -6px #1b2f4f80;
+        }
+
+        .attempts-badge i {
+            margin-right: 8px;
+            color: #ffd700;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            margin: 1.5rem 0 2rem;
+            color: #4a5568;
+            font-size: 1rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+
+        .letters-container, .drop-zone {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1.5rem 0;
+            min-height: 70px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 60px;
+        }
+
+        .letter {
+            padding: 0.8rem 1.2rem;
+            background: linear-gradient(145deg, #1b2f4f, #2c4b6e);
+            color: white;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(27, 47, 79, 0.3);
+            transition: all 0.2s;
+            min-width: 50px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            user-select: none;
+        }
+
+        .letter:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(27, 47, 79, 0.4);
+        }
+
+        .letter:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .drop-zone {
+            border: 3px dashed #1b2f4f;
+            background: rgba(27, 47, 79, 0.05);
+            min-height: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .drop-zone .letter {
+            cursor: default;
+            background: #28a745;
+        }
+
+        .drop-zone .letter:hover {
+            transform: none;
+        }
+
+        .btn-game {
+            background: #1b2f4f;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            margin: 1rem 0.5rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .btn-game:hover {
+            background: #254b6d;
+            transform: scale(1.02);
+            box-shadow: 0 8px 18px -6px #1b2f4f80;
+        }
+
+        .btn-game-outline {
+            background: transparent;
+            border: 2px solid #1b2f4f;
+            color: #1b2f4f;
+            font-weight: 600;
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 1rem 0.5rem;
+        }
+
+        .btn-game-outline:hover {
+            background: #1b2f4f;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px -6px #1b2f4f80;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border-radius: 60px;
+        }
+
+        .correct-message {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .incorrect-message {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .translation-box {
+            background: rgba(27, 47, 79, 0.1);
+            padding: 1.5rem;
+            border-radius: 50px;
+            margin: 1.5rem 0;
+            text-align: center;
+            border: 2px dashed rgba(27, 47, 79, 0.2);
+        }
+
+        .translation-box p {
+            font-size: 1.5rem;
+            color: #1b2f4f;
+            margin: 0;
+        }
+
+        .translation-box strong {
+            color: #1b2f4f;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+        }
+
+        .retry-message {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ff9800;
+            padding: 1rem;
+            border-radius: 50px;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        /* Decoración */
+        .decor-dot {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,240,210,0.4), transparent 70%);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        .drag-placeholder {
+            width: 50px;
+            height: 60px;
+            background: rgba(27, 47, 79, 0.1);
+            border-radius: 50px;
+            border: 2px dashed #1b2f4f;
+        }
+    </style>
+</head>
+<body>
+    <!-- Elemento decorativo -->
+    <div class="decor-dot"></div>
+
+    <!-- BARRA SUPERIOR -->
+    <div class="top-bar d-flex flex-wrap align-items-center justify-content-between">
+        <span class="brand-title"><i class="fas fa-hashtag me-2"></i>LexiQuest</span>
+        
+        <!-- Menú desplegable de usuario -->
+        <div class="user-menu" id="userMenu">
+            <div class="user-menu-button" id="userMenuButton">
+                <span class="user-name" id="displayUserName">{{ usuario if usuario else 'Usuario' }}</span>
+                <i class="fas fa-bars menu-icon"></i>
+            </div>
+            <div class="menu-desplegable" id="menuDesplegable">
+                <div class="menu-item" id="miCuenta">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Mi cuenta</span>
+                </div>
+                <div class="menu-divider"></div>
+                <div class="menu-item" id="cerrarSesion">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar sesión</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR DEL JUEGO -->
+    <div class="container">
+        <div class="game-container">
+            <h2>
+                <i class="fas fa-sort-alpha-down"></i>
+                Reordena la palabra
+            </h2>
+
+            <!-- Intentos restantes -->
+            <div class="text-center">
+                <span class="attempts-badge">
+                    <i class="fas fa-heart"></i>
+                    Intentos restantes: {{ attempts }}
+                </span>
+            </div>
+
+            <div class="instructions">
+                <i class="fas fa-arrows-alt me-2"></i>
+                Arrastra las letras al área inferior para formar la palabra correcta
+            </div>
+
+            {% if not result or result == "retry" %}
+                <div class="game-area">
+                    <!-- Contenedor de letras disponibles -->
+                    <div class="letters-container" id="letters">
+                        {% for letter in letters %}
+                            <div class="letter" draggable="true">{{ letter }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Zona de destino para ordenar -->
+                    <div class="drop-zone" id="dropzone">
+                        <span class="text-muted" style="opacity: 0.5;">Arrastra las letras aquí</span>
+                    </div>
+
+                    <!-- Formulario oculto para enviar la palabra -->
+                    <form method="POST" action="{{ url_for('unscramble_check') }}" id="unscrambleForm">
+                        <input type="hidden" name="user_word" id="user_word">
+                        <div class="button-container">
+                            <button type="submit" class="btn-game" onclick="prepareWord()">
+                                <i class="fas fa-check-circle me-2"></i>Verificar palabra
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
+                                <i class="fas fa-arrow-left me-2"></i>Regresar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if result == "retry" %}
+                        <div class="retry-message text-center">
+                            <i class="fas fa-times-circle me-2"></i>
+                            Incorrecto, intenta de nuevo.
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if result == "correct" %}
+                <div class="result-message correct-message">
+                    <i class="fas fa-trophy me-2"></i>¡Correcto! 🎉
+                </div>
+                
+                <div class="translation-box">
+                    <p>
+                        <i class="fas fa-language me-2"></i>
+                        Traducción: <strong>{{ meaning }}</strong>
+                    </p>
+                </div>
+
+                <div class="button-container">
+                    <a href="{{ url_for('unscramble') }}" class="btn-game">
+                        <i class="fas fa-redo-alt me-2"></i>Nuevo juego
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
+                        <i class="fas fa-arrow-left me-2"></i>Regresar al Dashboard
+                    </a>
+                </div>
+            {% elif result == "fail" %}
+                <div class="result-message incorrect-message">
+                    <i class="fas fa-skull me-2"></i>Sin intentos ❌
+                </div>
+                
+                <div class="translation-box">
+                    <p>
+                        <i class="fas fa-check-circle me-2" style="color: #28a745;"></i>
+                        Palabra correcta: <strong>{{ correct_word }}</strong>
+                    </p>
+                    <p class="mt-3">
+                        <i class="fas fa-language me-2"></i>
+                        Traducción: <strong>{{ meaning }}</strong>
+                    </p>
+                </div>
+
+                <div class="button-container">
+                    <a href="{{ url_for('unscramble') }}" class="btn-game">
+                        <i class="fas fa-redo-alt me-2"></i>Nuevo juego
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
+                        <i class="fas fa-arrow-left me-2"></i>Regresar al Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function() {
+            // Elementos del menú
+            const userMenuButton = document.getElementById('userMenuButton');
+            const menuDesplegable = document.getElementById('menuDesplegable');
+            const miCuenta = document.getElementById('miCuenta');
+            const cerrarSesion = document.getElementById('cerrarSesion');
+            
+            // Toggle del menú desplegable
+            if (userMenuButton) {
+                userMenuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menuDesplegable.classList.toggle('active');
+                });
+            }
+            
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!userMenuButton?.contains(e.target) && !menuDesplegable?.contains(e.target)) {
+                    menuDesplegable?.classList.remove('active');
+                }
+            });
+            
+            // Prevenir que clics dentro del menú lo cierren
+            if (menuDesplegable) {
+                menuDesplegable.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // Manejar clic en "Mi cuenta"
+            if (miCuenta) {
+                miCuenta.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = '/perfil';
+                });
+            }
+            
+            // Manejar cierre de sesión
+            if (cerrarSesion) {
+                cerrarSesion.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = '/logout';
+                });
+            }
+        })();
+
+        // ===== LÓGICA DE ARRASTRE =====
+        let dragged = null;
+
+        document.addEventListener("dragstart", function(e) {
+            if (e.target.classList.contains("letter")) {
+                dragged = e.target;
+                e.target.style.opacity = "0.5";
+            }
+        });
+
+        document.addEventListener("dragend", function(e) {
+            if (e.target.classList.contains("letter")) {
+                e.target.style.opacity = "1";
+            }
+        });
+
+        const dropzone = document.getElementById("dropzone");
+        const lettersContainer = document.getElementById("letters");
+
+        // Permitir soltar en el dropzone
+        dropzone.addEventListener("dragover", function(e) {
+            e.preventDefault();
+            dropzone.style.backgroundColor = "rgba(27, 47, 79, 0.1)";
+        });
+
+        dropzone.addEventListener("dragleave", function(e) {
+            dropzone.style.backgroundColor = "";
+        });
+
+        dropzone.addEventListener("drop", function(e) {
+            e.preventDefault();
+            dropzone.style.backgroundColor = "";
+            
+            if (dragged) {
+                // Remover el texto de placeholder si existe
+                const placeholder = dropzone.querySelector('.text-muted');
+                if (placeholder) {
+                    placeholder.remove();
+                }
+                
+                // Clonar para evitar problemas de referencia
+                const cloned = dragged.cloneNode(true);
+                cloned.setAttribute('draggable', 'false'); // No arrastrar desde dropzone
+                cloned.style.cursor = 'default';
+                dropzone.appendChild(cloned);
+                dragged.remove(); // Eliminar el original
+                dragged = null;
+            }
+        });
+
+        // Permitir arrastrar de vuelta al contenedor original
+        lettersContainer.addEventListener("dragover", function(e) {
+            e.preventDefault();
+        });
+
+        lettersContainer.addEventListener("drop", function(e) {
+            e.preventDefault();
+            
+            if (dragged) {
+                // Esto es para cuando se arrastra desde el dropzone de vuelta
+                const letters = dropzone.querySelectorAll('.letter');
+                letters.forEach(letter => {
+                    if (letter === dragged) {
+                        const cloned = dragged.cloneNode(true);
+                        cloned.setAttribute('draggable', 'true');
+                        cloned.style.cursor = 'grab';
+                        lettersContainer.appendChild(cloned);
+                        dragged.remove();
+                    }
+                });
+                dragged = null;
+            }
+        });
+
+        // Función para preparar la palabra antes de enviar
+        function prepareWord() {
+            let letters = document.querySelectorAll("#dropzone .letter");
+            let word = "";
+            letters.forEach(l => word += l.innerText);
+            
+            if (word.length === 0) {
+                alert('Por favor, ordena las letras en el área inferior');
+                return false;
+            }
+            
+            document.getElementById("user_word").value = word;
+            return true;
+        }
+
+        // Vincular la función al botón
+        window.prepareWord = prepareWord;
+    </script>
+</body>
+</html>

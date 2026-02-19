@@ -10,6 +10,10 @@
     const barraProgreso = document.getElementById('barraProgreso');
     const progresoTexto = document.getElementById('progresoTexto');
     const leccionRapida = document.getElementById('leccionRapida');
+    const hangman = document.getElementById('hangman');
+    const match = document.getElementById('match');
+    const quiz = document.getElementById('quiz');
+    const unscramble = document.getElementById('unscramble');
     
     // Obtener nombre de usuario del elemento HTML (enviado por Flask)
     // No usar localStorage, Flask maneja la sesión
@@ -17,7 +21,7 @@
     
     // Mostrar mensaje de bienvenida
     if (mensajeBienvenida) {
-        mensajeBienvenida.textContent = `¡Bienvenido/a, ${usuario}! Sigue aprendiendo cada día.`;
+        mensajeBienvenida.textContent = `¡Bienvenido/a, ${usuario}!`;
     }
     
     // Valores dinámicos de nivel y progreso (simulados)
@@ -67,6 +71,38 @@
         leccionRapida.addEventListener('click', function() {
             // Aquí puedes redirigir a una lección aleatoria
             window.location.href = '/leccion-rapida';
+        });
+    }
+
+        // Manejar clic en "Hangman"
+    if (hangman) {
+        hangman.addEventListener('click', function() {
+            // Aquí puedes redirigir a una lección aleatoria
+            window.location.href = '/hangman';
+        });
+    }
+
+        // Manejar clic en "Match"
+    if (match) {
+        match.addEventListener('click', function() {
+            // Aquí puedes redirigir a una lección aleatoria
+            window.location.href = '/match';
+        });
+    }
+
+       // Manejar clic en "Quiz"
+    if (quiz) {
+        quiz.addEventListener('click', function() {
+            // Aquí puedes redirigir a una lección aleatoria
+            window.location.href = '/quiz';
+        });
+    }
+
+    // Manejar clic en "Unscramble"
+    if (unscramble) {
+        unscramble.addEventListener('click', function() {
+            // Aquí puedes redirigir a una lección aleatoria
+            window.location.href = '/unscramble';
         });
     }
 

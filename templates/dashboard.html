@@ -86,9 +86,9 @@
                         </div>
                         <h4 class="actividad-titulo">Hangman</h4>
                         <div class="descripcion mb-4">
-                            Adivina la palabra: selecciona las letras correctas.
+                            Escoge las letras correctas.
                         </div>
-                        <button class="btn btn-comenzar" onclick="window.location.href='/hangman'">
+                        <button class="btn btn-comenzar" href='/hangman' id="hangman">
                             Comenzar <i class="fas fa-arrow-right ms-2"></i>
                         </button>
                     </div>
@@ -104,7 +104,7 @@
                         <div class="descripcion mb-4">
                             Relaciona las palabras correctamente.
                         </div>
-                        <button class="btn btn-comenzar" onclick="window.location.href='/match'">
+                        <button class="btn btn-comenzar" href='/match' id="match">
                             Comenzar <i class="fas fa-arrow-right ms-2"></i>
                         </button>
                     </div>
@@ -120,7 +120,7 @@
                         <div class="descripcion mb-4">
                             Selecciona la palabra correcta.
                         </div>
-                        <button class="btn btn-comenzar" onclick="window.location.href='/quiz'">
+                        <button class="btn btn-comenzar" href='/quiz' id="quiz">
                             Comenzar <i class="fas fa-arrow-right ms-2"></i>
                         </button>
                     </div>
@@ -132,11 +132,11 @@
                         <div class="actividad-imagen">
                             <i class="fas fa-exchange-alt"></i>
                         </div>
-                        <h4 class="actividad-titulo">Word Scramble</h4>
+                        <h4 class="actividad-titulo">Word Unscramble</h4>
                         <div class="descripcion mb-4">
-                            Reordena las letras.
+                            Reordena la palabra.
                         </div>
-                        <button class="btn btn-comenzar" onclick="window.location.href='/scramble'">
+                        <button class="btn btn-comenzar" href='/unscramble' id="unscramble">
                             Comenzar <i class="fas fa-arrow-right ms-2"></i>
                         </button>
                     </div>
@@ -144,7 +144,7 @@
             </div>
             
             <div class="mt-5 text-center text-secondary">
-                <i class="fas fa-lightbulb me-2"></i>
+                <i class="fa-solid fa-hand"></i>
                 <span id="mensajeBienvenida"></span>
             </div>
         </div>
