@@ -102,7 +102,7 @@ def login():
     
     return redirect("/")
 
-######## DASHBOARD
+######## DASHBOARD ########
 
 @app.route("/dashboard")
 def dashboard():
@@ -111,7 +111,7 @@ def dashboard():
     flash("Por favor inicia sesión primero", "error")
     return redirect("/")
 
-# Placeholder
+# Perfil de usuario
 
 @app.route("/perfil")
 def perfil():
@@ -128,13 +128,13 @@ def leccion_rapida():
         return redirect("/dashboard")  # O redirigir a una lección específica
     return redirect("/")
 
-# Placeholder routes for activities
+######## ACTIVIDADES ########
 
 @app.route("/hangman")
 def hangman():
     cursor = con.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
+    cursor.execute("SELECT * FROM words WHERE id_word < 10 ORDER BY RAND() LIMIT 1")
     #cursor.execute("SELECT * FROM words WHERE id_word =1")
     word = cursor.fetchone()
 
@@ -149,8 +149,8 @@ def hangman():
     session["game_over"] = False
     session["won"] = False
 
-    if not os.path.exists(session["img_path"]):
-        session["img_path"] = "images/Placeholder.webp"
+    #if not os.path.exists(session["img_path"]):
+    #    session["img_path"] = "images/Placeholder.webp"
 
     return redirect(url_for("hangman_play"))
 
@@ -198,7 +198,8 @@ def hangman_play():
         game_over=session["game_over"],
         won=session["won"],
         word=word,
-        img_path=session["img_path"]
+        img_path=session["img_path"],
+        usuario=session["usuario"]
     )
 
 @app.route("/hangman/surrender")
@@ -254,7 +255,8 @@ def match_play():
             "match_result.html",
             results=results,
             score=score,
-            total=len(words)
+            total=len(words),
+            usuario=session["usuario"]
         )
 
     # Mezclar significados
@@ -264,7 +266,8 @@ def match_play():
     return render_template(
         "match.html",
         words=words,
-        meanings=meanings
+        meanings=meanings,
+        usuario=session["usuario"]
     )
 
 @app.route("/quiz")
@@ -299,7 +302,8 @@ def quiz():
         "quiz.html",
         meaning=correct_word["meaning"],
         options=options,
-        answered=False
+        answered=False,
+        usuario=session["usuario"]
     )
 
 @app.route("/quiz/answer", methods=["POST"])
@@ -339,7 +343,8 @@ def quiz_answer():
         answered=True,
         selected=selected,
         correct=correct,
-        is_correct=is_correct
+        is_correct=is_correct,
+        usuario=session["usuario"]
     )
 
 
@@ -366,7 +371,8 @@ def unscramble():
         "unscramble.html",
         letters=letters,
         attempts=attempts,
-        result=None
+        result=None,
+        usuario=session["usuario"]
     )
 
 @app.route("/unscramble/check", methods=["POST"])
@@ -396,7 +402,8 @@ def unscramble_check():
         attempts=session["uns_attempts"],
         result=result,
         correct_word=correct_word,
-        meaning=meaning
+        meaning=meaning, 
+        usuario=session["usuario"]
     )
 
 # CERRAR SESION
