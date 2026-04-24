@@ -13,8 +13,6 @@
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-</head>
-<body>
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -28,12 +26,12 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
+</head>
+<body>
     <div class="container-fluid px-0">
         <!-- BARRA SUPERIOR -->
         <div class="top-bar d-flex flex-wrap align-items-center justify-content-between">
             <span class="brand-title">LexiQuest</span>
-            
             <!-- Menú desplegable de usuario -->
             <div class="user-menu" id="userMenu">
                 <div class="user-menu-button" id="userMenuButton">
@@ -57,6 +55,7 @@
         <!-- CUERPO PRINCIPAL -->
         <div class="content-wrapper">
             <!-- Cabecera del dashboard -->
+             <br>
             <div class="dashboard-header mb-5">
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="nivel-badge">

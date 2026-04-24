@@ -6,6 +6,7 @@
 body {
     min-height: 100vh;
     margin: 0;
+    padding: 0;
     background: linear-gradient(145deg, #f9f0e7 0%, #d9e2f0 100%);
 }
 
@@ -33,6 +34,7 @@ body {
 .top-bar {
     padding: 1% 2%;
     margin: 0;
+    margin-top: 0;
 
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(10px);
@@ -133,6 +135,9 @@ body {
 
 .content-wrapper {
     padding: 1.5rem 2rem 3rem 2rem;
+    place-items: center;
+    height: 75vh;
+    display: grid;
 }
 
 .decor-dot {

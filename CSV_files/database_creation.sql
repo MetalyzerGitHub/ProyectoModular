@@ -6,6 +6,7 @@ CREATE TABLE usuarios (
     nombre_usuario VARCHAR(100) NOT NULL UNIQUE,
     -- correo VARCHAR(150) NOT NULL UNIQUE,
     contrasena_hash VARCHAR(255) NOT NULL,
+    nivel DECIMAL(5, 2) DEFAULT '0',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

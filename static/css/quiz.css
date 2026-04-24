@@ -1,0 +1,329 @@
+/* ===== ESTILOS DEL MENÚ DE USUARIO ===== */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.user-menu-button {
+    background: rgba(27, 47, 79, 0.1);
+    border: 2px solid rgba(27, 47, 79, 0.2);
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.user-menu-button:hover {
+    background: rgba(27, 47, 79, 0.2);
+    border-color: rgba(27, 47, 79, 0.3);
+}
+
+.user-name {
+    font-weight: 600;
+    color: #1b2f4f;
+    font-size: 1rem;
+}
+
+.menu-icon {
+    color: #1b2f4f;
+    font-size: 1.2rem;
+}
+
+.menu-desplegable {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    min-width: 200px;
+    display: none;
+    z-index: 1000;
+    border: 1px solid rgba(255,255,255,0.5);
+    overflow: hidden;
+}
+
+.menu-desplegable.active {
+    display: block;
+}
+
+.menu-item {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #1b2f4f;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.menu-item:hover {
+    background: #f0f5fa;
+}
+
+.menu-item i {
+    width: 20px;
+    color: #2c4b6e;
+}
+
+.menu-divider {
+    height: 1px;
+    background: #e0e8f0;
+    margin: 0;
+}
+
+/* ===== ESTILOS ESPECÍFICOS PARA QUIZ ===== */
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(145deg, #f9f0e7 0%, #d9e2f0 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+.quiz-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2.5rem;
+    box-shadow: 0 25px 45px -12px rgba(0, 40, 80, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+h2 {
+    color: #1b2f4f;
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+h2 i {
+    color: #2c4b6e;
+    margin-right: 10px;
+}
+
+h3 {
+    color: #1b2f4f;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.meaning-box {
+    background: rgba(27, 47, 79, 0.1);
+    padding: 2rem;
+    border-radius: 50px;
+    margin: 2rem 0;
+    text-align: center;
+    border: 2px dashed rgba(27, 47, 79, 0.2);
+}
+
+.meaning-box p {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1b2f4f;
+    margin: 0;
+    word-break: break-word;
+}
+
+.options-container {
+    margin: 2rem 0;
+}
+
+.option-item {
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(27, 47, 79, 0.2);
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    margin: 1rem 0;
+    transition: all 0.2s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.option-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: #1b2f4f;
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(27, 47, 79, 0.1);
+}
+
+.option-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #1b2f4f;
+    border-radius: 50%;
+    margin-right: 1rem;
+    position: relative;
+    cursor: pointer;
+}
+
+.option-item input[type="radio"]:checked {
+    background: #1b2f4f;
+    border-color: #1b2f4f;
+    box-shadow: 0 0 0 3px rgba(27, 47, 79, 0.2);
+}
+
+.option-item input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.option-text {
+    font-size: 1.2rem;
+    color: #1b2f4f;
+    font-weight: 500;
+}
+
+.btn-quiz {
+    background: #1b2f4f;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.8rem 2.5rem;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+    margin: 1rem 0.5rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.btn-quiz:hover {
+    background: #254b6d;
+    transform: scale(1.02);
+    box-shadow: 0 8px 18px -6px #1b2f4f80;
+}
+
+.btn-quiz-outline {
+    background: transparent;
+    border: 2px solid #1b2f4f;
+    color: #1b2f4f;
+    font-weight: 600;
+    padding: 0.8rem 2.5rem;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 1rem 0.5rem;
+}
+
+.btn-quiz-outline:hover {
+    background: #1b2f4f;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px -6px #1b2f4f80;
+}
+
+.result-message {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 60px;
+}
+
+.correct-message {
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.incorrect-message {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.answers-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+}
+
+.answer-item {
+    padding: 1rem 2rem;
+    margin: 0.5rem 0;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.answer-correct {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.answer-incorrect {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.answer-neutral {
+    background: rgba(255, 255, 255, 0.5);
+    color: #1b2f4f;
+    border: 2px solid rgba(27, 47, 79, 0.2);
+}
+
+.answer-icon {
+    font-size: 1.3rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+/* Decoración */
+.decor-dot {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,240,210,0.4), transparent 70%);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 50%;
+}
+
+.instructions {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    margin-bottom: 2rem;
+    color: #4a5568;
+    font-size: 1rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
