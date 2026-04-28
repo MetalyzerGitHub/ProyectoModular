@@ -19,19 +19,7 @@ con=mysql.connector.connect(
     database=os.getenv("MYSQL_DB")
 )
 
-
 ################### RUTAS ###################
-
-@app.route("/test-db")  ### PRUEBA DE CONEXION, QUITAR DESPUES
-def test_db():
-    try:
-        cursor = con.cursor()
-        cursor.execute("SHOW TABLES")
-        tables=cursor.fetchall()
-        cursor.close()
-        return "Conexión a MySQL exitosa!"
-    except Exception as e:
-        return f"Error de conexión: {e}"
 
 # INDEX
 
@@ -78,15 +66,16 @@ def register():
 
 @app.route("/login", methods=["POST"])
 def login():
-    nombre = request.form["nombre"]
+    # datos del formulario
+    nombre = request.form["nombre"]     
     password = request.form["password"]
-    
-    cursor = None
+    # hacer consulta a la base
+    cursor = None           
     try:
         cursor = con.cursor()
         cursor.execute("SELECT id_usuario, nombre_usuario, contrasena_hash FROM usuarios WHERE nombre_usuario = %s", (nombre,))
         usuario = cursor.fetchone()
-        
+        # Verificar contraseña
         if usuario and check_password_hash(usuario[2], password):
             session["usuario"] = usuario[1]
             session["user_id"] = usuario[0]
@@ -104,19 +93,59 @@ def login():
 
 ######## DASHBOARD ########
 
+def obtener_nivel():
+    # solicitar el numero por medio de una query
+    cursor = None
+    try:
+        cursor = con.cursor()
+        cursor.execute(
+            "SELECT nivel FROM usuarios WHERE id_usuario = %s",
+            (session["user_id"],)
+        )
+        result = cursor.fetchone()
+    # manejo de errores de la query
+    except Exception as e:
+        print(f"Error al obtener nivel: {e}")
+        result = None
+    finally:
+        if cursor:
+            cursor.close()
+    # Extraer los datos especificos del nivel
+    nivel_decimal = float(result[0]) if result else 0.0
+    return nivel_decimal
+
 @app.route("/dashboard")
 def dashboard():
-    if "usuario" in session:
-        return render_template("dashboard.html", usuario=session["usuario"])
-    flash("Por favor inicia sesión primero", "error")
-    return redirect("/")
+    # verificacion
+    if "usuario" not in session:
+        flash("Por favor inicia sesión primero", "error")
+        return redirect("/")
+    # Obtener los datos especificos del nivel
+    nivel_decimal = obtener_nivel()
+    nivel = int(nivel_decimal)
+    # Renderizar y enviar los datos 
+    return render_template(
+        "dashboard.html",
+        usuario = session["usuario"],
+        nivel           = nivel,
+        progreso        = int((nivel_decimal - nivel) * 100),
+        nivel_siguiente = nivel + 1
+    )
 
 # Perfil de usuario
 
 @app.route("/perfil")
 def perfil():
     if "usuario" in session:
-        return render_template("perfil.html", usuario=session["usuario"])
+        # Obtener los datos especificos del nivel
+        nivel_decimal = obtener_nivel()
+        nivel = int(nivel_decimal)
+        return render_template("perfil.html", 
+                               usuario=session["usuario"],
+                               nivel           = nivel,
+                               progreso        = int((nivel_decimal - nivel) * 100),
+                               nivel_siguiente = nivel + 1
+                               )
     flash("Por favor inicia sesión primero", "error")
     return redirect("/")
 

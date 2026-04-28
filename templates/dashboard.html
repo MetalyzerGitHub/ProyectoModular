@@ -55,17 +55,21 @@
         <!-- CUERPO PRINCIPAL -->
         <div class="content-wrapper">
             <!-- Cabecera del dashboard -->
-             <br>
+            <br>
             <div class="dashboard-header mb-5">
+                
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="nivel-badge">
-                        <i class="fas fa-star me-2"></i>Nivel <span id="nivelUsuario">3</span>
+                        <i class="fas fa-star me-2"></i>Nivel <span id="nivelUsuario">{{ nivel }}</span>
                     </div>
                     <div class="progress-container" style="min-width: 200px;">
-                        <div class="progress-bar-custom" id="barraProgreso" style="width: 65%;"></div>
+                        <div class="progress-bar-custom" id="barraProgreso" style="--progress: {{ progreso }}%;"></div>
                     </div>
-                    <span class="text-secondary" id="progresoTexto">65% al Nivel 4</span>
+                    <span class="text-secondary" id="progresoTexto">
+                        {{ progreso }}% al Nivel {{ nivel_siguiente }}
+                    </span>
                 </div>
+
                 <button class="btn btn-leccion" id="leccionRapida">
                     <i class="fas fa-bolt me-2"></i>Lección Rápida
                 </button>

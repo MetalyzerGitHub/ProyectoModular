@@ -1,37 +1,31 @@
 (function() {
     // Elementos del DOM
-    const userMenuButton = document.getElementById('userMenuButton');
-    const menuDesplegable = document.getElementById('menuDesplegable');
-    const cerrarSesion = document.getElementById('cerrarSesion');
-    const miCuenta = document.getElementById('miCuenta');
-    const displayUserName = document.getElementById('displayUserName');
+    const userMenuButton    = document.getElementById('userMenuButton');
+    const menuDesplegable   = document.getElementById('menuDesplegable');
+    const cerrarSesion      = document.getElementById('cerrarSesion');
+    const miCuenta          = document.getElementById('miCuenta');
+    const displayUserName   = document.getElementById('displayUserName');
     const mensajeBienvenida = document.getElementById('mensajeBienvenida');
-    const nivelUsuario = document.getElementById('nivelUsuario');
-    const barraProgreso = document.getElementById('barraProgreso');
-    const progresoTexto = document.getElementById('progresoTexto');
-    const leccionRapida = document.getElementById('leccionRapida');
-    const hangman = document.getElementById('hangman');
-    const match = document.getElementById('match');
-    const quiz = document.getElementById('quiz');
-    const unscramble = document.getElementById('unscramble');
+    const nivelUsuario      = document.getElementById('nivelUsuario');
+    const barraProgreso     = document.getElementById('barraProgreso');
+    const progresoTexto     = document.getElementById('progresoTexto');
+    const leccionRapida     = document.getElementById('leccionRapida');
+    const hangman           = document.getElementById('hangman');
+    const match             = document.getElementById('match');
+    const quiz              = document.getElementById('quiz');
+    const unscramble        = document.getElementById('unscramble');
     
     // Obtener nombre de usuario del elemento HTML (enviado por Flask)
     // No usar localStorage, Flask maneja la sesión
     let usuario = displayUserName ? displayUserName.textContent : 'Invitado';
-    
+
     // Mostrar mensaje de bienvenida
     if (mensajeBienvenida) {
         mensajeBienvenida.textContent = `¡Bienvenido/a, ${usuario}!`;
     }
     
-    // Valores dinámicos de nivel y progreso (simulados)
-    const nivelActual = 3;
-    const progresoActual = 65; // porcentaje
-    
-    if (nivelUsuario) nivelUsuario.textContent = nivelActual;
-    if (barraProgreso) barraProgreso.style.width = progresoActual + '%';
-    if (progresoTexto) progresoTexto.textContent = progresoActual + '% al Nivel ' + (nivelActual + 1);
-    
+    // Valores dinámicos de nivel y progreso
+        
     // Toggle del menú desplegable
     if (userMenuButton) {
         userMenuButton.addEventListener('click', function(e) {
