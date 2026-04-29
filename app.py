@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,13 +7,12 @@ from dotenv import load_dotenv
 import random
 import math
 
-
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-con=mysql.connector.connect(
+con = mysql.connector.connect(
     host=os.getenv("MYSQL_HOST"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
@@ -22,7 +22,6 @@ con=mysql.connector.connect(
 ################### RUTAS ###################
 
 # INDEX
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -31,28 +30,21 @@ def index():
 def register():
     nombre = request.form["nombre"]
     password = request.form["password"]
-    
     cursor = None
     try:
         cursor = con.cursor()
-        
-        # Verificar si ya existe
         cursor.execute("SELECT id_usuario FROM usuarios WHERE nombre_usuario = %s", (nombre,))
         usuario_existente = cursor.fetchone()
-        
         if usuario_existente:
             flash("El usuario ya existe. Elige otro nombre.", "error")
             return redirect("/")
-        
         hash_password = generate_password_hash(password)
-        
         cursor.execute(
             "INSERT INTO usuarios (nombre_usuario, contrasena_hash) VALUES (%s, %s)",
             (nombre, hash_password)
         )
         con.commit()
         flash("Cuenta creada correctamente. Ahora puedes iniciar sesión.", "success")
-        
     except Exception as e:
         print(f"Error en registro: {e}")
         flash("Error al crear la cuenta. Intenta de nuevo.", "error")
@@ -61,21 +53,17 @@ def register():
     finally:
         if cursor:
             cursor.close()
-    
     return redirect("/")
 
 @app.route("/login", methods=["POST"])
 def login():
-    # datos del formulario
-    nombre = request.form["nombre"]     
+    nombre = request.form["nombre"]
     password = request.form["password"]
-    # hacer consulta a la base
-    cursor = None           
+    cursor = None
     try:
         cursor = con.cursor()
         cursor.execute("SELECT id_usuario, nombre_usuario, contrasena_hash FROM usuarios WHERE nombre_usuario = %s", (nombre,))
         usuario = cursor.fetchone()
-        # Verificar contraseña
         if usuario and check_password_hash(usuario[2], password):
             session["usuario"] = usuario[1]
             session["user_id"] = usuario[0]
@@ -88,13 +76,11 @@ def login():
     finally:
         if cursor:
             cursor.close()
-    
     return redirect("/")
 
 ######## DASHBOARD ########
 
 def obtener_nivel():
-    # solicitar el numero por medio de una query
     cursor = None
     try:
         cursor = con.cursor()
@@ -103,73 +89,136 @@ def obtener_nivel():
             (session["user_id"],)
         )
         result = cursor.fetchone()
-    # manejo de errores de la query
     except Exception as e:
         print(f"Error al obtener nivel: {e}")
         result = None
     finally:
         if cursor:
             cursor.close()
-    # Extraer los datos especificos del nivel
     nivel_decimal = float(result[0]) if result else 0.0
     return nivel_decimal
 
 @app.route("/dashboard")
 def dashboard():
-    # verificacion
     if "usuario" not in session:
         flash("Por favor inicia sesión primero", "error")
         return redirect("/")
-    # Obtener los datos especificos del nivel
     nivel_decimal = obtener_nivel()
     nivel = int(nivel_decimal)
-    # Renderizar y enviar los datos 
     return render_template(
         "dashboard.html",
-        usuario = session["usuario"],
-        nivel           = nivel,
-        progreso        = int((nivel_decimal - nivel) * 100),
-        nivel_siguiente = nivel + 1
+        usuario=session["usuario"],
+        nivel=nivel,
+        progreso=int((nivel_decimal - nivel) * 100),
+        nivel_siguiente=nivel + 1
     )
-
-# Perfil de usuario
 
 @app.route("/perfil")
 def perfil():
     if "usuario" in session:
-        # Obtener los datos especificos del nivel
         nivel_decimal = obtener_nivel()
         nivel = int(nivel_decimal)
-        return render_template("perfil.html", 
+        return render_template("perfil.html",
                                usuario=session["usuario"],
-                               nivel           = nivel,
-                               progreso        = int((nivel_decimal - nivel) * 100),
-                               nivel_siguiente = nivel + 1
-                               )
+                               nivel=nivel,
+                               progreso=int((nivel_decimal - nivel) * 100),
+                               nivel_siguiente=nivel + 1)
     flash("Por favor inicia sesión primero", "error")
     return redirect("/")
 
+######## LECCIÓN RÁPIDA ########
+
 @app.route("/leccion-rapida")
 def leccion_rapida():
-    if "usuario" in session:
-        # Aquí puedes implementar lógica para seleccionar una lección aleatoria
-        flash("¡Comenzando lección rápida!", "success")
-        return redirect("/dashboard")  # O redirigir a una lección específica
-    return redirect("/")
+    if "usuario" not in session:
+        flash("Inicia sesión primero", "error")
+        return redirect("/")
+    
+    # Elegir 3 o 4 juegos al azar
+    all_games = ['hangman', 'match', 'quiz', 'unscramble']
+    k = random.choice([3, 4])
+    games = random.sample(all_games, k=k)
+    
+    session['leccion_mode'] = True
+    session['leccion_games'] = games
+    session['leccion_index'] = 0
+    session['leccion_results'] = []
+    session['leccion_result_recorded'] = False
+    
+    first_game = games[0]
+    session['leccion_game_start'] = time.time()
+    if first_game == 'hangman':
+        return redirect(url_for('hangman'))
+    elif first_game == 'match':
+        return redirect(url_for('match'))
+    elif first_game == 'quiz':
+        return redirect(url_for('quiz'))
+    elif first_game == 'unscramble':
+        return redirect(url_for('unscramble'))
+    else:
+        return redirect(url_for('dashboard'))
+
+@app.route("/leccion/next")
+def leccion_next():
+    if not session.get("leccion_mode"):
+        return redirect(url_for("dashboard"))
+    
+    session["leccion_index"] += 1
+    games = session["leccion_games"]
+    idx = session["leccion_index"]
+    
+    if idx >= len(games):
+        return redirect(url_for("leccion_summary"))
+    
+    next_game = games[idx]
+    session["leccion_result_recorded"] = False
+    session["leccion_game_start"] = time.time()
+    
+    if next_game == 'hangman':
+        return redirect(url_for('hangman'))
+    elif next_game == 'match':
+        return redirect(url_for('match'))
+    elif next_game == 'quiz':
+        return redirect(url_for('quiz'))
+    elif next_game == 'unscramble':
+        return redirect(url_for('unscramble'))
+    else:
+        return redirect(url_for("leccion_summary"))
+
+@app.route("/leccion/cancel")
+def leccion_cancel():
+    for key in ["leccion_mode", "leccion_games", "leccion_index",
+                "leccion_results", "leccion_result_recorded", "leccion_game_start"]:
+        session.pop(key, None)
+    return redirect(url_for("dashboard"))
+
+@app.route("/leccion/summary")
+def leccion_summary():
+    if not session.get("leccion_mode"):
+        return redirect(url_for("dashboard"))
+    results = session.get("leccion_results", [])
+    total_time = sum(r.get("time", 0) for r in results)
+    return render_template("leccion_summary.html",
+                           results=results,
+                           total_time=round(total_time, 1),
+                           usuario=session["usuario"])
+
+@app.route("/leccion/finish")
+def leccion_finish():
+    for key in ["leccion_mode", "leccion_games", "leccion_index",
+                "leccion_results", "leccion_result_recorded", "leccion_game_start"]:
+        session.pop(key, None)
+    return redirect(url_for("dashboard"))
 
 ######## ACTIVIDADES ########
 
 @app.route("/hangman")
 def hangman():
     cursor = con.cursor(dictionary=True)
-
     cursor.execute("SELECT * FROM words WHERE id_word < 10 ORDER BY RAND() LIMIT 1")
-    #cursor.execute("SELECT * FROM words WHERE id_word =1")
     word = cursor.fetchone()
-
     cursor.close()
 
-    # Guardar estado en sesión
     session["word"] = word["spelling"].lower()
     session["meaning"] = word["meaning"]
     session["img_path"] = word["img_path"]
@@ -177,9 +226,6 @@ def hangman():
     session["attempts"] = 6
     session["game_over"] = False
     session["won"] = False
-
-    #if not os.path.exists(session["img_path"]):
-    #    session["img_path"] = "images/Placeholder.webp"
 
     return redirect(url_for("hangman_play"))
 
@@ -189,30 +235,39 @@ def hangman_play():
         return redirect(url_for("hangman"))
 
     word = session["word"]
-
     if request.method == "POST" and not session["game_over"]:
         letter = request.form["letter"].lower()
-
         guessed = session.get("guessed", [])
 
         if letter not in guessed:
             guessed.append(letter)
-            session["guessed"] = guessed   # <- REASIGNAR
-
+            session["guessed"] = guessed
 
             if letter not in word:
                 session["attempts"] -= 1
 
-        # Verificar victoria
         if all(l in session["guessed"] for l in word):
             session["game_over"] = True
             session["won"] = True
 
-        # Verificar derrota
         if session["attempts"] <= 0:
             session["game_over"] = True
 
-    # Construir palabra mostrada
+    # Registrar resultado en modo lección si el juego terminó y no se ha registrado
+    if session["game_over"] and session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+        start = session.get("leccion_game_start", time.time())
+        elapsed = round(time.time() - start, 1) if start else 0
+        result = {
+            "game": "Ahorcado",
+            "result": "Ganado" if session["won"] else "Perdido",
+            "attempts_used": 6 - session["attempts"],
+            "total_attempts": 6,
+            "time": elapsed
+        }
+        session["leccion_results"].append(result)
+        session["leccion_result_recorded"] = True
+        session.modified = True
+
     display_word = ""
     for l in word:
         if l in session["guessed"]:
@@ -228,7 +283,8 @@ def hangman_play():
         won=session["won"],
         word=word,
         img_path=session["img_path"],
-        usuario=session["usuario"]
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
 
 @app.route("/hangman/surrender")
@@ -237,19 +293,13 @@ def hangman_surrender():
     session["won"] = False
     return redirect(url_for("hangman_play"))
 
-
 @app.route("/match")
 def match():
     cursor = con.cursor(dictionary=True)
-
     cursor.execute("SELECT id_word, spelling, meaning FROM words ORDER BY RAND() LIMIT 3")
     words = cursor.fetchall()
-
     cursor.close()
-
-    # Guardar respuestas correctas
     session["match_words"] = words
-
     return redirect(url_for("match_play"))
 
 @app.route("/match/play", methods=["GET", "POST"])
@@ -258,25 +308,36 @@ def match_play():
         return redirect(url_for("match"))
 
     words = session["match_words"]
-
     if request.method == "POST":
         score = 0
         results = []
-
         for word in words:
             selected = request.form.get(str(word["id_word"]))
             correct = word["meaning"]
-
             is_correct = selected == correct
             if is_correct:
                 score += 1
-
             results.append({
                 "spelling": word["spelling"],
                 "correct": correct,
                 "selected": selected,
                 "is_correct": is_correct
             })
+
+        # Registrar en modo lección
+        if session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+            start = session.get("leccion_game_start", time.time())
+            elapsed = round(time.time() - start, 1) if start else 0
+            result_data = {
+                "game": "Emparejar",
+                "result": f"{score}/{len(words)} correctas",
+                "score": score,
+                "total": len(words),
+                "time": elapsed
+            }
+            session["leccion_results"].append(result_data)
+            session["leccion_result_recorded"] = True
+            session.modified = True
 
         session.pop("match_words", None)
 
@@ -285,10 +346,10 @@ def match_play():
             results=results,
             score=score,
             total=len(words),
-            usuario=session["usuario"]
+            usuario=session["usuario"],
+            leccion_mode=session.get("leccion_mode", False)
         )
 
-    # Mezclar significados
     meanings = [w["meaning"] for w in words]
     random.shuffle(meanings)
 
@@ -296,20 +357,17 @@ def match_play():
         "match.html",
         words=words,
         meanings=meanings,
-        usuario=session["usuario"]
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
 
 @app.route("/quiz")
 def quiz():
     cursor = con.cursor(dictionary=True)
-
-    # 1 palabra correcta
     cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
     correct_word = cursor.fetchone()
-
     part = correct_word["part_of_speech"]
 
-    # 2 palabras incorrectas de la misma categoría
     cursor.execute("""
         SELECT * FROM words 
         WHERE part_of_speech = %s 
@@ -317,14 +375,11 @@ def quiz():
         ORDER BY RAND() 
         LIMIT 2
     """, (part, correct_word["id_word"]))
-
     wrong_words = cursor.fetchall()
-
     cursor.close()
 
     options = [correct_word] + wrong_words
     random.shuffle(options)
-
     session["quiz_correct"] = correct_word["id_word"]
 
     return render_template(
@@ -332,22 +387,19 @@ def quiz():
         meaning=correct_word["meaning"],
         options=options,
         answered=False,
-        usuario=session["usuario"]
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
 
 @app.route("/quiz/answer", methods=["POST"])
 def quiz_answer():
     selected = int(request.form.get("option"))
     correct = session.get("quiz_correct")
-
     is_correct = selected == correct
 
-    # Volvemos a reconstruir las opciones
     cursor = con.cursor(dictionary=True)
-
     cursor.execute("SELECT id_word, spelling FROM words WHERE id_word = %s", (correct,))
     correct_word = cursor.fetchone()
-
     cursor.execute("""
         SELECT id_word, spelling FROM words 
         WHERE part_of_speech = (
@@ -357,13 +409,25 @@ def quiz_answer():
         ORDER BY RAND()
         LIMIT 2
     """, (correct, correct))
-
     wrong_words = cursor.fetchall()
-
     cursor.close()
 
     options = [correct_word] + wrong_words
     random.shuffle(options)
+
+    # Registrar en modo lección
+    if session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+        start = session.get("leccion_game_start", time.time())
+        elapsed = round(time.time() - start, 1) if start else 0
+        result_data = {
+            "game": "Quiz",
+            "result": "Correcto" if is_correct else "Incorrecto",
+            "attempts": 1,
+            "time": elapsed
+        }
+        session["leccion_results"].append(result_data)
+        session["leccion_result_recorded"] = True
+        session.modified = True
 
     return render_template(
         "quiz.html",
@@ -373,18 +437,15 @@ def quiz_answer():
         selected=selected,
         correct=correct,
         is_correct=is_correct,
-        usuario=session["usuario"]
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
-
 
 @app.route("/unscramble")
 def unscramble():
-
     cursor = con.cursor(dictionary=True)
-
     cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
     word = cursor.fetchone()
-
     cursor.close()
 
     letters = list(word["spelling"])
@@ -395,13 +456,15 @@ def unscramble():
     session["uns_word"] = word["spelling"]
     session["uns_meaning"] = word["meaning"]
     session["uns_attempts"] = attempts
+    session["uns_initial_attempts"] = attempts   # guardamos los intentos iniciales
 
     return render_template(
         "unscramble.html",
         letters=letters,
         attempts=attempts,
         result=None,
-        usuario=session["usuario"]
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
 
 @app.route("/unscramble/check", methods=["POST"])
@@ -416,11 +479,26 @@ def unscramble_check():
     else:
         attempts -= 1
         session["uns_attempts"] = attempts
-
         if attempts <= 0:
             result = "fail"
         else:
             result = "retry"
+
+    # Registrar en modo lección si terminó (correct o fail)
+    if result in ("correct", "fail") and session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+        start = session.get("leccion_game_start", time.time())
+        elapsed = round(time.time() - start, 1) if start else 0
+        attempts_used = session.get("uns_initial_attempts", 0) - session.get("uns_attempts", 0)
+        result_data = {
+            "game": "Palabra Revuelta",
+            "result": "Correcto" if result == "correct" else "Fallido",
+            "attempts_used": attempts_used,
+            "total_attempts": session.get("uns_initial_attempts", 0),
+            "time": elapsed
+        }
+        session["leccion_results"].append(result_data)
+        session["leccion_result_recorded"] = True
+        session.modified = True
 
     letters = list(correct_word)
     random.shuffle(letters)
@@ -431,19 +509,17 @@ def unscramble_check():
         attempts=session["uns_attempts"],
         result=result,
         correct_word=correct_word,
-        meaning=meaning, 
-        usuario=session["usuario"]
+        meaning=meaning,
+        usuario=session["usuario"],
+        leccion_mode=session.get("leccion_mode", False)
     )
 
-# CERRAR SESION
-
+# CERRAR SESIÓN
 @app.route("/logout")
 def logout():
     session.clear()
     flash("Sesión cerrada correctamente", "success")
     return redirect("/")
-
-# MAIN
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -120,25 +120,27 @@
                 <div class="word-reveal text-center">
                     La palabra era: <strong>{{ word }}</strong>
                 </div>
-
-                <!-- Botones de acción -->
-                <div class="button-group">
-                    <a href="{{ url_for('hangman') }}" class="btn-game">
-                        <i class="fas fa-redo-alt me-2"></i>Jugar otra vez
-                    </a>
-                    <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
-                        <i class="fas fa-arrow-left me-2"></i>Regresar
-                    </a>
-                </div>
             {% endif %}
 
             <!-- Botón de regreso (solo visible si el juego no ha terminado) -->
             {% if not game_over %}
-            <div class="text-center mt-4">
-                <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
-                    <i class="fas fa-arrow-left me-2"></i>Regresar
-                </a>
-            </div>
+                <div class="text-center mt-4">
+                    {% if leccion_mode %}
+                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-game-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+                    {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn-game-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="button-group">
+                    {% if leccion_mode %}
+                        <a href="/leccion/next" class="btn-game"><i class="fas fa-arrow-right me-2"></i>Continuar</a>
+                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-game-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+                    {% else %}
+                        <a href="{{ url_for('hangman') }}" class="btn-game"><i class="fas fa-redo-alt me-2"></i>Jugar otra vez</a>
+                        <a href="{{ url_for('dashboard') }}" class="btn-game-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>

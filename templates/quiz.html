@@ -78,9 +78,11 @@
                         <button type="submit" class="btn-quiz">
                             <i class="fas fa-check-circle me-2"></i>Responder
                         </button>
-                        <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline">
-                            <i class="fas fa-arrow-left me-2"></i>Regresar
-                        </a>
+                        {% if leccion_mode %}
+                            <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-quiz-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+                        {% endif %}
                     </div>
                 </form>
 
@@ -122,12 +124,13 @@
                 </ul>
 
                 <div class="button-container">
-                    <a href="{{ url_for('quiz') }}" class="btn-quiz">
-                        <i class="fas fa-redo-alt me-2"></i>Nuevo intento
-                    </a>
-                    <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline">
-                        <i class="fas fa-arrow-left me-2"></i>Regresar
-                    </a>
+                    {% if leccion_mode %}
+                        <a href="/leccion/next" class="btn-quiz"><i class="fas fa-arrow-right me-2"></i>Continuar</a>
+                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-quiz-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+                    {% else %}
+                        <a href="{{ url_for('quiz') }}" class="btn-quiz"><i class="fas fa-redo-alt me-2"></i>Nuevo intento</a>
+                        <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
