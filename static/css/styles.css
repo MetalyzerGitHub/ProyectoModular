@@ -43,6 +43,86 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+/* Menú desplegable de usuario */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.user-menu-button {
+    background: rgba(27, 47, 79, 0.1);
+    border: 2px solid rgba(27, 47, 79, 0.2);
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.user-menu-button:hover {
+    background: rgba(27, 47, 79, 0.2);
+    border-color: rgba(27, 47, 79, 0.3);
+}
+
+.user-name {
+    font-weight: 600;
+    color: #1b2f4f;
+    font-size: 1rem;
+}
+
+.menu-icon {
+    color: #1b2f4f;
+    font-size: 1.2rem;
+}
+
+.menu-desplegable {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    min-width: 200px;
+    display: none;
+    z-index: 100;
+    border: 1px solid rgba(255,255,255,0.5);
+    overflow: hidden;
+}
+
+.menu-desplegable.active {
+    display: block;
+}
+
+.menu-item {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #1b2f4f;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: #f0f5fa;
+}
+
+.menu-item i {
+    width: 20px;
+    color: #2c4b6e;
+}
+
+.menu-divider {
+    height: 1px;
+    background: #e0e8f0;
+    margin: 0;
+}
+
+
 /* Botones principales */
 .btn-registro, .btn-iniciar {
     background: #1b2f4f;
