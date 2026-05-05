@@ -380,8 +380,10 @@ def quiz():
 
     options = [correct_word] + wrong_words
     random.shuffle(options)
+    
     session["quiz_correct"] = correct_word["id_word"]
-
+    session["quiz_option_ids"] = [opt["id_word"] for opt in options]
+    
     return render_template(
         "quiz.html",
         meaning=correct_word["meaning"],
@@ -398,22 +400,20 @@ def quiz_answer():
     is_correct = selected == correct
 
     cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT id_word, spelling FROM words WHERE id_word = %s", (correct,))
-    correct_word = cursor.fetchone()
-    cursor.execute("""
-        SELECT id_word, spelling FROM words 
-        WHERE part_of_speech = (
-            SELECT part_of_speech FROM words WHERE id_word = %s
-        )
-        AND id_word != %s
-        ORDER BY RAND()
-        LIMIT 2
-    """, (correct, correct))
-    wrong_words = cursor.fetchall()
+    
+    # ✅ Recuperar las opciones ORIGINALES guardadas en sesión
+    option_ids = session.get("quiz_option_ids", [])
+    placeholders = ", ".join(["%s"] * len(option_ids))
+    cursor.execute(
+        f"SELECT id_word, spelling FROM words WHERE id_word IN ({placeholders})",
+        tuple(option_ids)
+    )
+    words = cursor.fetchall()
     cursor.close()
 
-    options = [correct_word] + wrong_words
-    random.shuffle(options)
+    # Restaurar el orden original
+    word_map = {w["id_word"]: w for w in words}
+    options = [word_map[id] for id in option_ids if id in word_map]
 
     # Registrar en modo lección
     if session.get("leccion_mode") and not session.get("leccion_result_recorded"):
