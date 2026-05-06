@@ -1,27 +1,4 @@
 (function () {
-    // ── USER MENU ──────────────────────────────────────────────────────────────
-    const userMenuButton = document.getElementById('userMenuButton');
-    const menuDesplegable = document.getElementById('menuDesplegable');
-    const miCuenta = document.getElementById('miCuenta');
-    const cerrarSesion = document.getElementById('cerrarSesion');
-
-    if (userMenuButton) {
-        userMenuButton.addEventListener('click', function (e) {
-            e.stopPropagation();
-            menuDesplegable.classList.toggle('active');
-        });
-    }
-    document.addEventListener('click', function (e) {
-        if (!userMenuButton?.contains(e.target) && !menuDesplegable?.contains(e.target)) {
-            menuDesplegable?.classList.remove('active');
-        }
-    });
-    if (menuDesplegable) {
-        menuDesplegable.addEventListener('click', e => e.stopPropagation());
-    }
-    if (miCuenta) miCuenta.addEventListener('click', () => (window.location.href = '/perfil'));
-    if (cerrarSesion) cerrarSesion.addEventListener('click', () => (window.location.href = '/logout'));
-
     // ── MATCHING GAME ──────────────────────────────────────────────────────────
     const svg = document.getElementById('linesSvg');
     if (!svg) return; // Result page – nothing to do

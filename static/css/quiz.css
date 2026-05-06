@@ -243,3 +243,14 @@ h3 {
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

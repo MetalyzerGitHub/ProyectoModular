@@ -2,32 +2,7 @@
 
 {% block title %}Resumen de Lección · LexiQuest{% endblock %}
 {% block styles %}
-    <style>
-        .summary-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(10px);
-            border-radius: 2.5rem;
-            box-shadow: 0 25px 45px -12px rgba(0,40,80,0.25);
-        }
-        .summary-table th { background: rgba(27,47,79,0.1); color: #1b2f4f; }
-        .summary-table td { background: rgba(255,255,255,0.5); }
-        .btn-finalizar {
-            background: #1b2f4f;
-            border: none;
-            color: white;
-            padding: 0.8rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .btn-finalizar:hover {
-            background: #254b6d;
-            transform: scale(1.02);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leccion_summary.css') }}">
 {% endblock %}
 
 {% block content %}

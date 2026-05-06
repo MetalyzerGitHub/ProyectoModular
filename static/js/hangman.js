@@ -1,31 +1,4 @@
-(function() {
-    // Elementos del menú
-    const userMenuButton = document.getElementById('userMenuButton');
-    const menuDesplegable = document.getElementById('menuDesplegable');
-    const cerrarSesion = document.getElementById('cerrarSesion');
-    
-    // Toggle del menú desplegable
-    if (userMenuButton) {
-        userMenuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menuDesplegable.classList.toggle('active');
-        });
-    }
-    
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        if (!userMenuButton?.contains(e.target) && !menuDesplegable?.contains(e.target)) {
-            menuDesplegable?.classList.remove('active');
-        }
-    });
-    
-    // Manejar cierre de sesión
-    if (cerrarSesion) {
-        cerrarSesion.addEventListener('click', function() {
-            window.location.href = '/logout';
-        });
-    }
-    
+(function() {    
     // Auto-focus en el input de letra
     const letterInput = document.querySelector('.letter-input');
     if (letterInput) {

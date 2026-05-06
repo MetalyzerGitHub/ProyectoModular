@@ -1,47 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unscramble · LexiQuest</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Estilos personalizados -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% extends "base.html" %}
+
+{% block title %}Unscramble · LexiQuest{% endblock %}
+
+{% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/unscramble.css') }}">
-</head>
-<body>
-    <!-- Elemento decorativo -->
-    <div class="decor-dot"></div>
+{% endblock %}
 
-    <!-- BARRA SUPERIOR -->
-    <div class="top-bar d-flex flex-wrap align-items-center justify-content-between">
-        <span class="brand-title"></i>LexiQuest</span>
-        
-        <!-- Menú desplegable de usuario -->
-        <div class="user-menu" id="userMenu">
-            <div class="user-menu-button" id="userMenuButton">
-                <span class="user-name" id="displayUserName">{{ usuario if usuario else 'Usuario' }}</span>
-                <i class="fas fa-bars menu-icon"></i>
-            </div>
-            <div class="menu-desplegable" id="menuDesplegable">
-                <div class="menu-item" id="miCuenta">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Mi cuenta</span>
-                </div>
-                <div class="menu-divider"></div>
-                <div class="menu-item" id="cerrarSesion">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar sesión</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
+{% block content %}
     <!-- CONTENEDOR DEL JUEGO -->
     <div class="container">
         <div class="game-container">
@@ -151,9 +116,8 @@
             {% endif %}
         </div>
     </div>
+{% endblock %}
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}
     <script src="{{ url_for('static', filename='js/unscramble.js') }}"></script>
-</body>
-</html>
+{% endblock %}

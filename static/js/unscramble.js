@@ -1,37 +1,3 @@
-(function() {
-    const userMenuButton = document.getElementById('userMenuButton');
-    const menuDesplegable = document.getElementById('menuDesplegable');
-    const miCuenta = document.getElementById('miCuenta');
-    const cerrarSesion = document.getElementById('cerrarSesion');
-
-    if (userMenuButton) {
-        userMenuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menuDesplegable.classList.toggle('active');
-        });
-    }
-    document.addEventListener('click', function(e) {
-        if (!userMenuButton?.contains(e.target) && !menuDesplegable?.contains(e.target)) {
-            menuDesplegable?.classList.remove('active');
-        }
-    });
-    if (menuDesplegable) {
-        menuDesplegable.addEventListener('click', function(e) { e.stopPropagation(); });
-    }
-    if (miCuenta) {
-        miCuenta.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = '/perfil';
-        });
-    }
-    if (cerrarSesion) {
-        cerrarSesion.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = '/logout';
-        });
-    }
-})();
-
 // ===== LÓGICA DE ARRASTRE =====
 let dragged = null;
 
