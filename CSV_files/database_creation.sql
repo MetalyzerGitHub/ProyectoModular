@@ -48,3 +48,26 @@ CREATE TABLE intentos (
     CONSTRAINT fk_intentos_juego
         FOREIGN KEY (fk_juego) REFERENCES juegos(id_juego)
 ) ENGINE=InnoDB;
+
+INSERT INTO juegos (nombre, descripcion)
+VALUES 
+('Hangman', 'Escoge las letras correctas. '),
+('Match', 'Relaciona las palabras correctamente. '),
+('Quiz', 'Selecciona la palabra correcta. '),
+('Word Unscramble', 'Reordena la palabra. ');
+
+ALTER TABLE words ADD difficulty DECIMAL(4,3) DEFAULT 0.500;
+-- Normalizar frecuencia y longitud, luego calcular dificultad
+SET @min_freq = (SELECT MIN(frequency) FROM words);
+SET @max_freq = (SELECT MAX(frequency) FROM words);
+SET @min_len  = (SELECT MIN(wlen) FROM words);
+SET @max_len  = (SELECT MAX(wlen) FROM words);
+
+UPDATE words -- desactivar safe mode para ejecutar
+SET difficulty = (
+    (1.0 - (frequency - @min_freq) / NULLIF(@max_freq - @min_freq, 0)) 
+    + 
+    (wlen - @min_len) / NULLIF(@max_len - @min_len, 0)
+) / 2;
+ALTER TABLE usuarios ADD skill DECIMAL(4,3) DEFAULT 0.500;
+    

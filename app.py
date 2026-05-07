@@ -19,6 +19,90 @@ con = mysql.connector.connect(
     database=os.getenv("MYSQL_DB")
 )
 
+# ----------------- FUNCIONES AUXILIARES -----------------
+
+def get_game_id(cursor, game_name):
+    """Obtiene el id_juego de la tabla juegos según su nombre."""
+    cursor.execute("SELECT id_juego FROM juegos WHERE nombre = %s", (game_name,))
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+def select_adaptive_word(user_id):
+    """
+    Selecciona una palabra adaptada al nivel del usuario.
+    Retorna un diccionario con los datos de la palabra (o None si falla la consulta).
+    """
+    cursor = con.cursor(dictionary=True)
+    cursor.execute("SELECT skill FROM usuarios WHERE id_usuario = %s", (user_id,))
+    user = cursor.fetchone()
+    skill = float(user["skill"]) if user and user["skill"] is not None else 0.5
+
+    lower = max(0.0, skill - 0.15)
+    upper = min(1.0, skill + 0.15)
+
+    query = """
+        SELECT w.*,
+               (1.0 - ABS(w.difficulty - %s)) * 
+               CASE WHEN i.max_correcto = 1 THEN 0.5 ELSE 2.0 END AS weight
+        FROM words w
+        LEFT JOIN (
+            SELECT fk_palabra, MAX(CASE WHEN correcto = 1 THEN 1 ELSE 0 END) as max_correcto
+            FROM intentos
+            WHERE fk_usuario = %s
+            GROUP BY fk_palabra
+        ) i ON w.id_word = i.fk_palabra
+        WHERE w.difficulty BETWEEN %s AND %s
+        ORDER BY weight * RAND() DESC
+        LIMIT 1
+    """
+    cursor.execute(query, (skill, user_id, lower, upper))
+    word = cursor.fetchone()
+    cursor.close()
+
+    if word:
+        if "difficulty" in word:
+            word["difficulty"] = float(word["difficulty"])
+        return word
+    return None
+
+def random_word():
+    """Fallback: selecciona una palabra aleatoria de la base de datos."""
+    cursor = con.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
+    word = cursor.fetchone()
+    cursor.close()
+    if word and "difficulty" in word:
+        word["difficulty"] = float(word["difficulty"])
+    return word
+
+def update_user_skill(user_id, word_difficulty, success, alpha=0.1):
+    """
+    Actualiza el skill del usuario tras un intento.
+    """
+    word_difficulty = float(word_difficulty)
+    cursor = con.cursor()
+    cursor.execute("SELECT skill FROM usuarios WHERE id_usuario = %s", (user_id,))
+    row = cursor.fetchone()
+    if not row:
+        cursor.close()
+        return
+    current_skill = float(row[0]) if row[0] is not None else 0.5
+    if success:
+        new_skill = current_skill + alpha * (word_difficulty - current_skill)
+    else:
+        new_skill = current_skill - alpha * (current_skill - word_difficulty)
+    new_skill = max(0.0, min(1.0, new_skill))
+    cursor.execute("UPDATE usuarios SET skill = %s WHERE id_usuario = %s", (new_skill, user_id))
+    con.commit()
+    cursor.close()
+
+def increment_user_level(user_id, amount=0.1):
+    """Aumenta el nivel del usuario en una cantidad fija por acierto."""
+    cursor = con.cursor()
+    cursor.execute("UPDATE usuarios SET nivel = nivel + %s WHERE id_usuario = %s", (amount, user_id))
+    con.commit()
+    cursor.close()
+
 ################### RUTAS ###################
 
 # INDEX
@@ -95,7 +179,7 @@ def obtener_nivel():
     finally:
         if cursor:
             cursor.close()
-    nivel_decimal = float(result[0]) if result else 0.0
+    nivel_decimal = float(result[0]) if result and result[0] is not None else 0.0
     return nivel_decimal
 
 @app.route("/dashboard")
@@ -134,7 +218,6 @@ def leccion_rapida():
         flash("Inicia sesión primero", "error")
         return redirect("/")
     
-    # Elegir 3 o 4 juegos al azar
     all_games = ['hangman', 'match', 'quiz', 'unscramble']
     k = random.choice([3, 4])
     games = random.sample(all_games, k=k)
@@ -214,18 +297,23 @@ def leccion_finish():
 
 @app.route("/hangman")
 def hangman():
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM words WHERE id_word < 10 ORDER BY RAND() LIMIT 1")
-    word = cursor.fetchone()
-    cursor.close()
+    word = select_adaptive_word(session["user_id"])
+    if not word:
+        word = random_word()
+    if not word:
+        flash("No hay palabras disponibles", "error")
+        return redirect(url_for("dashboard"))
 
     session["word"] = word["spelling"].lower()
     session["meaning"] = word["meaning"]
     session["img_path"] = word["img_path"]
     session["guessed"] = []
-    session["attempts"] = 6
+    session["attempts"] = 3
+    session["total_attempts"] = session["attempts"]
     session["game_over"] = False
     session["won"] = False
+    session["word_id"] = word["id_word"]
+    session["word_difficulty"] = float(word["difficulty"])
 
     return redirect(url_for("hangman_play"))
 
@@ -253,18 +341,50 @@ def hangman_play():
         if session["attempts"] <= 0:
             session["game_over"] = True
 
-    # Registrar resultado en modo lección si el juego terminó y no se ha registrado
-    if session["game_over"] and session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+    if session["game_over"] and not session.get("leccion_result_recorded"):
         start = session.get("leccion_game_start", time.time())
         elapsed = round(time.time() - start, 1) if start else 0
-        result = {
-            "game": "Ahorcado",
-            "result": "Ganado" if session["won"] else "Perdido",
-            "attempts_used": 6 - session["attempts"],
-            "total_attempts": 6,
-            "time": elapsed
-        }
-        session["leccion_results"].append(result)
+        won = session["won"]
+        total_att = session["total_attempts"]
+        remaining = session["attempts"]
+
+        if won:
+            attempts_used = (total_att - remaining) + 1
+        else:
+            attempts_used = total_att
+
+        cursor_db = None
+        try:
+            cursor_db = con.cursor()
+            game_id = get_game_id(cursor_db, "hangman")
+            if game_id:
+                word_id = session.get("word_id")
+                cursor_db.execute(
+                    """INSERT INTO intentos (fk_usuario, fk_palabra, fk_juego, correcto, tiempo, numero_intentos)
+                       VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (session["user_id"], word_id, game_id, won, int(elapsed), attempts_used)
+                )
+                con.commit()
+                difficulty = float(session.get("word_difficulty", 0.5))
+                update_user_skill(session["user_id"], difficulty, won)
+                if won:
+                    increment_user_level(session["user_id"])   # <-- AQUÍ
+        except Exception as e:
+            print(f"Error insertando intento Hangman: {e}")
+            con.rollback()
+        finally:
+            if cursor_db:
+                cursor_db.close()
+
+        if session.get("leccion_mode"):
+            result = {
+                "game": "Ahorcado",
+                "result": "Ganado" if won else "Perdido",
+                "attempts_used": attempts_used,
+                "total_attempts": total_att,
+                "time": elapsed
+            }
+            session["leccion_results"].append(result)
         session["leccion_result_recorded"] = True
         session.modified = True
 
@@ -295,11 +415,28 @@ def hangman_surrender():
 
 @app.route("/match")
 def match():
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT id_word, spelling, meaning FROM words ORDER BY RAND() LIMIT 3")
-    words = cursor.fetchall()
-    cursor.close()
+    chosen_words = []
+    for _ in range(3):
+        word = select_adaptive_word(session["user_id"])
+        if word and word["id_word"] not in [w["id_word"] for w in chosen_words]:
+            chosen_words.append(word)
+    if len(chosen_words) < 3:
+        cursor = con.cursor(dictionary=True)
+        needed = 3 - len(chosen_words)
+        existing_ids = tuple([w["id_word"] for w in chosen_words]) if chosen_words else (-1,)
+        placeholders = ','.join(['%s'] * len(existing_ids))
+        cursor.execute(
+            f"SELECT id_word, spelling, meaning, difficulty FROM words WHERE id_word NOT IN ({placeholders}) ORDER BY RAND() LIMIT %s",
+            (*existing_ids, needed)
+        )
+        extra_words = cursor.fetchall()
+        cursor.close()
+        for w in extra_words:
+            w["difficulty"] = float(w["difficulty"])
+        chosen_words.extend(extra_words)
+    words = [{"id_word": w["id_word"], "spelling": w["spelling"], "meaning": w["meaning"], "difficulty": float(w["difficulty"])} for w in chosen_words]
     session["match_words"] = words
+    session["match_difficulties"] = [w["difficulty"] for w in words]
     return redirect(url_for("match_play"))
 
 @app.route("/match/play", methods=["GET", "POST"])
@@ -321,13 +458,38 @@ def match_play():
                 "spelling": word["spelling"],
                 "correct": correct,
                 "selected": selected,
-                "is_correct": is_correct
+                "is_correct": is_correct,
+                "id_word": word["id_word"],
+                "difficulty": word["difficulty"]
             })
 
-        # Registrar en modo lección
-        if session.get("leccion_mode") and not session.get("leccion_result_recorded"):
-            start = session.get("leccion_game_start", time.time())
-            elapsed = round(time.time() - start, 1) if start else 0
+        start = session.get("leccion_game_start", time.time())
+        elapsed = round(time.time() - start, 1) if start else 0
+
+        cursor_db = None
+        try:
+            cursor_db = con.cursor()
+            game_id = get_game_id(cursor_db, "match")
+            if game_id:
+                for w, r in zip(words, results):
+                    is_word_correct = r["is_correct"]
+                    cursor_db.execute(
+                        """INSERT INTO intentos (fk_usuario, fk_palabra, fk_juego, correcto, tiempo, numero_intentos)
+                           VALUES (%s, %s, %s, %s, %s, %s)""",
+                        (session["user_id"], w["id_word"], game_id, is_word_correct, int(elapsed), 1)
+                    )
+                    update_user_skill(session["user_id"], w["difficulty"], is_word_correct)
+                    if is_word_correct:
+                        increment_user_level(session["user_id"])   # <-- AQUÍ
+                con.commit()
+        except Exception as e:
+            print(f"Error insertando intentos Match: {e}")
+            con.rollback()
+        finally:
+            if cursor_db:
+                cursor_db.close()
+
+        if session.get("leccion_mode"):
             result_data = {
                 "game": "Emparejar",
                 "result": f"{score}/{len(words)} correctas",
@@ -363,11 +525,15 @@ def match_play():
 
 @app.route("/quiz")
 def quiz():
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
-    correct_word = cursor.fetchone()
-    part = correct_word["part_of_speech"]
+    correct_word = select_adaptive_word(session["user_id"])
+    if not correct_word:
+        correct_word = random_word()
+    if not correct_word:
+        flash("No hay palabras disponibles", "error")
+        return redirect(url_for("dashboard"))
 
+    part = correct_word["part_of_speech"]
+    cursor = con.cursor(dictionary=True)
     cursor.execute("""
         SELECT * FROM words 
         WHERE part_of_speech = %s 
@@ -383,7 +549,9 @@ def quiz():
     
     session["quiz_correct"] = correct_word["id_word"]
     session["quiz_option_ids"] = [opt["id_word"] for opt in options]
-    
+    session["quiz_word_id"] = correct_word["id_word"]
+    session["quiz_word_difficulty"] = float(correct_word["difficulty"])
+
     return render_template(
         "quiz.html",
         meaning=correct_word["meaning"],
@@ -400,8 +568,6 @@ def quiz_answer():
     is_correct = selected == correct
 
     cursor = con.cursor(dictionary=True)
-    
-    # ✅ Recuperar las opciones ORIGINALES guardadas en sesión
     option_ids = session.get("quiz_option_ids", [])
     placeholders = ", ".join(["%s"] * len(option_ids))
     cursor.execute(
@@ -411,14 +577,36 @@ def quiz_answer():
     words = cursor.fetchall()
     cursor.close()
 
-    # Restaurar el orden original
     word_map = {w["id_word"]: w for w in words}
     options = [word_map[id] for id in option_ids if id in word_map]
 
-    # Registrar en modo lección
-    if session.get("leccion_mode") and not session.get("leccion_result_recorded"):
-        start = session.get("leccion_game_start", time.time())
-        elapsed = round(time.time() - start, 1) if start else 0
+    start = session.get("leccion_game_start", time.time())
+    elapsed = round(time.time() - start, 1) if start else 0
+
+    cursor_db = None
+    try:
+        cursor_db = con.cursor()
+        game_id = get_game_id(cursor_db, "quiz")
+        if game_id:
+            word_id = session.get("quiz_word_id")
+            difficulty = float(session.get("quiz_word_difficulty", 0.5))
+            cursor_db.execute(
+                """INSERT INTO intentos (fk_usuario, fk_palabra, fk_juego, correcto, tiempo, numero_intentos)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (session["user_id"], word_id, game_id, is_correct, int(elapsed), 1)
+            )
+            con.commit()
+            update_user_skill(session["user_id"], difficulty, is_correct)
+            if is_correct:
+                increment_user_level(session["user_id"])    # <-- AQUÍ
+    except Exception as e:
+        print(f"Error insertando intento Quiz: {e}")
+        con.rollback()
+    finally:
+        if cursor_db:
+            cursor_db.close()
+
+    if session.get("leccion_mode"):
         result_data = {
             "game": "Quiz",
             "result": "Correcto" if is_correct else "Incorrecto",
@@ -443,10 +631,12 @@ def quiz_answer():
 
 @app.route("/unscramble")
 def unscramble():
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM words ORDER BY RAND() LIMIT 1")
-    word = cursor.fetchone()
-    cursor.close()
+    word = select_adaptive_word(session["user_id"])
+    if not word:
+        word = random_word()
+    if not word:
+        flash("No hay palabras disponibles", "error")
+        return redirect(url_for("dashboard"))
 
     letters = list(word["spelling"])
     random.shuffle(letters)
@@ -456,7 +646,9 @@ def unscramble():
     session["uns_word"] = word["spelling"]
     session["uns_meaning"] = word["meaning"]
     session["uns_attempts"] = attempts
-    session["uns_initial_attempts"] = attempts   # guardamos los intentos iniciales
+    session["uns_initial_attempts"] = attempts
+    session["uns_word_id"] = word["id_word"]
+    session["uns_word_difficulty"] = float(word["difficulty"])
 
     return render_template(
         "unscramble.html",
@@ -484,21 +676,52 @@ def unscramble_check():
         else:
             result = "retry"
 
-    # Registrar en modo lección si terminó (correct o fail)
-    if result in ("correct", "fail") and session.get("leccion_mode") and not session.get("leccion_result_recorded"):
+    if result in ("correct", "fail"):
         start = session.get("leccion_game_start", time.time())
         elapsed = round(time.time() - start, 1) if start else 0
-        attempts_used = session.get("uns_initial_attempts", 0) - session.get("uns_attempts", 0)
-        result_data = {
-            "game": "Palabra Revuelta",
-            "result": "Correcto" if result == "correct" else "Fallido",
-            "attempts_used": attempts_used,
-            "total_attempts": session.get("uns_initial_attempts", 0),
-            "time": elapsed
-        }
-        session["leccion_results"].append(result_data)
-        session["leccion_result_recorded"] = True
-        session.modified = True
+        total_att = session.get("uns_initial_attempts", attempts)
+        remaining = session.get("uns_attempts", 0)
+
+        if result == "correct":
+            attempts_used = (total_att - remaining) + 1
+        else:
+            attempts_used = total_att
+
+        cursor_db = None
+        try:
+            cursor_db = con.cursor()
+            game_id = get_game_id(cursor_db, "unscramble")
+            if game_id:
+                word_id = session.get("uns_word_id")
+                difficulty = float(session.get("uns_word_difficulty", 0.5))
+                is_correct = (result == "correct")
+                cursor_db.execute(
+                    """INSERT INTO intentos (fk_usuario, fk_palabra, fk_juego, correcto, tiempo, numero_intentos)
+                       VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (session["user_id"], word_id, game_id, is_correct, int(elapsed), attempts_used)
+                )
+                con.commit()
+                update_user_skill(session["user_id"], difficulty, is_correct)
+                if is_correct:
+                    increment_user_level(session["user_id"])   # <-- AQUÍ
+        except Exception as e:
+            print(f"Error insertando intento Unscramble: {e}")
+            con.rollback()
+        finally:
+            if cursor_db:
+                cursor_db.close()
+
+        if session.get("leccion_mode"):
+            result_data = {
+                "game": "Palabra Revuelta",
+                "result": "Correcto" if result == "correct" else "Fallido",
+                "attempts_used": attempts_used,
+                "total_attempts": total_att,
+                "time": elapsed
+            }
+            session["leccion_results"].append(result_data)
+            session["leccion_result_recorded"] = True
+            session.modified = True
 
     letters = list(correct_word)
     random.shuffle(letters)

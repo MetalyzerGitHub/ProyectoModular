@@ -14,7 +14,7 @@
                     <tr>
                         <th>Juego</th>
                         <th>Resultado</th>
-                        <th>Intentos / Aciertos</th>
+                        <th>Intentos usados</th>
                         <th>Tiempo (s)</th>
                     </tr>
                 </thead>
@@ -26,10 +26,8 @@
                         <td>
                             {% if r.game == "Ahorcado" or r.game == "Palabra Revuelta" %}
                                 {{ r.attempts_used }} / {{ r.total_attempts }}
-                            {% elif r.game == "Quiz" %}
-                                {{ "1/1" if r.result == "Correcto" else "0/1" }}
-                            {% elif r.game == "Emparejar" %}
-                                {{ r.score }}/{{ r.total }}
+                            {% elif r.game == "Quiz" or r.game == "Emparejar" %}
+                                {{ "1/1" }}
                             {% endif %}
                         </td>
                         <td>{{ r.time }}</td>
