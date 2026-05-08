@@ -1,243 +1,419 @@
-/* ===== ESTILOS ESPECÍFICOS PARA UNSCRAMBLE ===== */
-body {
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(145deg, #f9f0e7 0%, #d9e2f0 100%);
-    font-family: 'Inter', sans-serif;
+/* PAGE */
+
+.unscramble-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-.game-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 2.5rem;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 2.5rem;
-    box-shadow: 0 25px 45px -12px rgba(0, 40, 80, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+/* HEADER */
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+
+    margin-bottom: 2rem;
+
+    flex-wrap: wrap;
 }
 
-h2 {
-    color: #1b2f4f;
-    font-weight: 700;
-    font-size: 2.2rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
+.game-badge {
+    display: inline-flex;
+    align-items: center;
 
-h2 i {
-    color: #2c4b6e;
-    margin-right: 10px;
-}
+    background: rgba(37,99,235,0.1);
 
-.attempts-badge {
-    background: #1b2f4f;
-    color: white;
-    padding: 0.6rem 1.8rem;
-    border-radius: 50px;
+    color: #2563eb;
+
+    padding: 0.7rem 1.2rem;
+
+    border-radius: 999px;
+
     font-weight: 600;
-    font-size: 1.1rem;
-    display: inline-block;
-    margin: 1rem auto;
-    box-shadow: 0 8px 18px -6px #1b2f4f80;
+
+    margin-bottom: 1rem;
 }
 
-.attempts-badge i {
-    margin-right: 8px;
-    color: #ffd700;
+.game-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+
+    font-weight: 800;
+
+    color: #0f172a;
+
+    margin-bottom: 0.7rem;
 }
 
-.instructions {
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 50px;
-    padding: 1rem 2rem;
-    margin: 1.5rem 0 2rem;
-    color: #4a5568;
-    font-size: 1rem;
-    text-align: center;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+.game-subtitle {
+    color: #64748b;
+    font-size: 1.05rem;
 }
 
-.game-area {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2rem;
+/* ATTEMPTS */
+
+.attempts-card {
+    width: 120px;
+    height: 120px;
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 20px 35px rgba(37,99,235,0.25);
+}
+
+.attempts-card i {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.attempts-card span {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.attempts-card small {
+    opacity: 0.85;
+}
+
+/* CARD */
+
+.game-card {
+    background: rgba(255,255,255,0.78);
+
+    backdrop-filter: blur(14px);
+
+    border-radius: 32px;
+
     padding: 2rem;
-    margin: 1rem 0;
+
+    border: 1px solid rgba(255,255,255,0.5);
+
+    box-shadow:
+        0 20px 40px rgba(15,23,42,0.08);
 }
 
-.letters-container, .drop-zone {
+/* INSTRUCTIONS */
+
+.instructions-box {
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    color: #1d4ed8;
+
+    padding: 1rem 1.2rem;
+
+    border-radius: 18px;
+
+    margin-bottom: 2rem;
+
+    font-weight: 500;
+}
+
+/* LABELS */
+
+.section-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #334155;
+
+    margin-bottom: 1rem;
+}
+
+/* LETTERS */
+
+.letters-container,
+.drop-zone {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
-    margin: 1.5rem 0;
-    min-height: 70px;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 60px;
+
+    gap: 0.9rem;
+
+    min-height: 90px;
+
+    padding: 1.5rem;
+
+    border-radius: 24px;
 }
 
+/* AVAILABLE LETTERS */
+
+.letters-container {
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    margin-bottom: 2rem;
+}
+
+/* DROPZONE */
+
+.drop-zone {
+    background: rgba(37,99,235,0.04);
+
+    border: 2px dashed rgba(37,99,235,0.35);
+
+    transition: 0.2s ease;
+
+    margin-bottom: 2rem;
+}
+
+.drop-zone.drag-active {
+    background: rgba(37,99,235,0.08);
+}
+
+.drop-placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* LETTER */
+
 .letter {
-    padding: 0.8rem 1.2rem;
-    background: linear-gradient(145deg, #1b2f4f, #2c4b6e);
+    width: 60px;
+    height: 60px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
     color: white;
-    border-radius: 50px;
-    font-size: 1.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.4rem;
     font-weight: 700;
+
     cursor: grab;
-    box-shadow: 0 5px 15px rgba(27, 47, 79, 0.3);
-    transition: all 0.2s;
-    min-width: 50px;
-    text-align: center;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+
     user-select: none;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .letter:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(27, 47, 79, 0.4);
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(37,99,235,0.25);
 }
 
 .letter:active {
     cursor: grabbing;
-    transform: scale(0.98);
 }
 
-.drop-zone {
-    border: 3px dashed #1b2f4f;
-    background: rgba(27, 47, 79, 0.05);
-    min-height: 80px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-}
-
-.drop-zone .letter {
-    cursor: default;
-    background: #28a745;
-}
-
-.drop-zone .letter:hover {
-    transform: none;
-}
-
-.btn-game {
-    background: #1b2f4f;
-    border: none;
-    color: white;
-    font-weight: 600;
-    padding: 0.8rem 2.5rem;
-    border-radius: 50px;
-    transition: all 0.2s ease;
-    font-size: 1.1rem;
-    margin: 1rem 0.5rem;
-    cursor: pointer;
-    border: 2px solid transparent;
-}
-
-.btn-game:hover {
-    background: #254b6d;
-    transform: scale(1.02);
-    box-shadow: 0 8px 18px -6px #1b2f4f80;
-}
-
-.btn-game-outline {
-    background: transparent;
-    border: 2px solid #1b2f4f;
-    color: #1b2f4f;
-    font-weight: 600;
-    padding: 0.8rem 2.5rem;
-    border-radius: 50px;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    margin: 1rem 0.5rem;
-}
-
-.btn-game-outline:hover {
-    background: #1b2f4f;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px -6px #1b2f4f80;
-}
-
-.result-message {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    border-radius: 60px;
-}
-
-.correct-message {
-    color: #28a745;
-    background: rgba(40, 167, 69, 0.1);
-}
-
-.incorrect-message {
-    color: #dc3545;
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.translation-box {
-    background: rgba(27, 47, 79, 0.1);
-    padding: 1.5rem;
-    border-radius: 50px;
-    margin: 1.5rem 0;
-    text-align: center;
-    border: 2px dashed rgba(27, 47, 79, 0.2);
-}
-
-.translation-box p {
-    font-size: 1.5rem;
-    color: #1b2f4f;
-    margin: 0;
-}
-
-.translation-box strong {
-    color: #1b2f4f;
-    background: rgba(255, 255, 255, 0.5);
-    padding: 0.3rem 1rem;
-    border-radius: 50px;
-}
-
-.retry-message {
-    background: rgba(255, 193, 7, 0.1);
-    color: #ff9800;
-    padding: 1rem;
-    border-radius: 50px;
-    margin: 1rem 0;
-    font-weight: 600;
-}
+/* BUTTONS */
 
 .button-container {
     display: flex;
     justify-content: center;
     gap: 1rem;
+
     flex-wrap: wrap;
+
     margin-top: 2rem;
 }
 
-/* Decoración */
-.decor-dot {
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at 30% 30%, rgba(255,240,210,0.4), transparent 70%);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: -1;
-    border-radius: 50%;
+.btn-primary-custom,
+.btn-outline-custom {
+    padding: 0.9rem 1.5rem;
+
+    border-radius: 999px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+
+    text-decoration: none;
 }
 
-.drag-placeholder {
-    width: 50px;
-    height: 60px;
-    background: rgba(27, 47, 79, 0.1);
-    border-radius: 50px;
-    border: 2px dashed #1b2f4f;
+.btn-primary-custom {
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    border: none;
+
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(37,99,235,0.25);
+
+    color: white;
+}
+
+.btn-outline-custom {
+    border: 2px solid #dbeafe;
+
+    color: #1d4ed8;
+
+    background: white;
+}
+
+.btn-outline-custom:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* RETRY */
+
+.retry-message {
+    margin-top: 1.5rem;
+
+    padding: 1rem;
+
+    border-radius: 18px;
+
+    background: rgba(245,158,11,0.08);
+
+    color: #d97706;
+
+    text-align: center;
+
+    font-weight: 600;
+}
+
+/* RESULTS */
+
+.result-card {
+    text-align: center;
+
+    padding: 2rem;
+
+    border-radius: 28px;
+
+    margin-bottom: 2rem;
+}
+
+.success-card {
+    background: rgba(34,197,94,0.08);
+
+    color: #15803d;
+}
+
+.fail-card {
+    background: rgba(239,68,68,0.08);
+
+    color: #dc2626;
+}
+
+.result-icon {
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    margin: 0 auto 1.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 2rem;
+
+    background: white;
+}
+
+.correct-answer {
+    margin-top: 1rem;
+
+    font-size: 2rem;
+
+    font-weight: 800;
+}
+
+/* TRANSLATION */
+
+.translation-box {
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 24px;
+
+    padding: 2rem;
+
+    text-align: center;
+
+    margin-bottom: 2rem;
+}
+
+.translation-label {
+    color: #64748b;
+
+    font-weight: 600;
+
+    margin-bottom: 0.7rem;
+}
+
+.translation-word {
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    color: #0f172a;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .game-card {
+        padding: 1.5rem;
+    }
+
+    .attempts-card {
+        width: 100px;
+        height: 100px;
+    }
+
+    .letter {
+        width: 54px;
+        height: 54px;
+
+        font-size: 1.2rem;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        width: 100%;
+        text-align: center;
+    }
 }

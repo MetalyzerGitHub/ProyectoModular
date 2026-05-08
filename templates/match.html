@@ -1,33 +1,40 @@
 {% extends "base.html" %}
 
-{% block title %}>Match · LexiQuest{% endblock %}
+{% block title %}Match · LexiQuest{% endblock %}
+
 {% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/match.css') }}">
 {% endblock %}
 
 {% block content %}
-    <!-- CONTENEDOR DEL JUEGO -->
-    <div class="container">
+<div class="match-page">
+    <div class="container py-4">
         <div class="game-container">
-            <h2>
-                <i class="fas fa-puzzle-piece"></i>
-                Relaciona las palabras
-            </h2>
+            
+            <div class="game-header">
+                <div class="game-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+
+                <h2>Relaciona las palabras</h2>
+
+                <p class="game-subtitle">
+                    Conecta cada palabra en inglés con su significado correcto.
+                </p>
+            </div>
 
             <div class="instructions">
                 <i class="fas fa-info-circle"></i>
-                Haz clic en una palabra en inglés, luego en su significado para conectarlas.
+                Haz clic en una palabra en inglés y luego en su significado.
             </div>
 
-            <!-- Hidden form for submission -->
             <form method="POST" id="matchForm">
                 {% for word in words %}
                     <input type="hidden" name="{{ word.id_word }}" id="answer_{{ word.id_word }}" value="">
                 {% endfor %}
 
-                <!-- Matching arena -->
                 <div class="match-arena" id="matchArena">
-                    <!-- SVG overlay for lines -->
+
                     <svg class="lines-svg" id="linesSvg" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
@@ -36,67 +43,100 @@
                         </defs>
                     </svg>
 
-                    <!-- Left column: English words -->
+                    <!-- LEFT COLUMN -->
                     <div class="column column-left" id="columnLeft">
                         <div class="column-header">
-                            <i class="fas fa-language"></i> Inglés
+                            <i class="fas fa-language"></i>
+                            Inglés
                         </div>
+
                         {% for word in words %}
-                        <div class="match-card left-card" 
-                             data-id="{{ word.id_word }}" 
+                        <div class="match-card left-card"
+                             data-id="{{ word.id_word }}"
                              data-label="{{ word.spelling }}"
                              id="left_{{ word.id_word }}">
+
                             <span class="card-dot left-dot"></span>
-                            <span class="card-text">{{ word.spelling }}</span>
+
+                            <span class="card-text">
+                                {{ word.spelling }}
+                            </span>
                         </div>
                         {% endfor %}
                     </div>
 
-                    <!-- Right column: Meanings -->
+                    <!-- RIGHT COLUMN -->
                     <div class="column column-right" id="columnRight">
                         <div class="column-header">
-                            <i class="fas fa-book"></i> Significado
+                            <i class="fas fa-book"></i>
+                            Significado
                         </div>
+
                         {% for meaning in meanings %}
                         <div class="match-card right-card"
                              data-meaning="{{ meaning }}"
                              id="right_{{ loop.index }}">
-                            <span class="card-text">{{ meaning }}</span>
+
+                            <span class="card-text">
+                                {{ meaning }}
+                            </span>
+
                             <span class="card-dot right-dot"></span>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
 
+                <!-- MOBILE HELP -->
+                <div class="mobile-help">
+                    <i class="fas fa-mobile-alt"></i>
+                    En pantallas pequeñas puedes desplazarte verticalmente para ver todas las conexiones.
+                </div>
+
+                <!-- PROGRESS -->
                 <div class="progress-bar-wrapper">
                     <div class="progress-label">
                         <span id="connectedCount">0</span> / {{ words|length }} conectadas
                     </div>
+
                     <div class="progress-track">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
                 </div>
 
+                <!-- BUTTONS -->
                 <div class="button-container">
+
                     <button type="button" id="resetBtn" class="btn-game-outline">
-                        <i class="fas fa-undo me-2"></i>Reiniciar
+                        <i class="fas fa-undo me-2"></i>
+                        Reiniciar
                     </button>
+
                     <button type="submit" class="btn-game" id="submitBtn" disabled>
-                        <i class="fas fa-check-circle me-2"></i>Verificar respuestas
+                        <i class="fas fa-check-circle me-2"></i>
+                        Verificar respuestas
                     </button>
+
                     {% if leccion_mode %}
-                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro?');" class="btn-game-outline">
-                            <i class="fas fa-times me-2"></i>Cancelar lección
+                        <a href="/leccion/cancel"
+                           onclick="return confirm('¿Estás seguro?');"
+                           class="btn-game-outline">
+
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar lección
                         </a>
                     {% else %}
                         <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
-                            <i class="fas fa-arrow-left me-2"></i>Regresar
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Regresar
                         </a>
                     {% endif %}
                 </div>
+
             </form>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

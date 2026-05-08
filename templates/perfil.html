@@ -3,80 +3,138 @@
 {% block title %}Mi Perfil · LexiQuest{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/perfil.css') }}">
 {% endblock %}
 
 {% block content %}
-    <!-- CONTENIDO PRINCIPAL - PERFIL -->
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <!-- Tarjeta de Perfil con estilo glass -->
-                <div class="perfil-glass-card">
-                    <!-- Cabecera con avatar -->
-                    <div class="perfil-header">
-                        <div class="perfil-avatar">
-                            <i class="fas fa-user-circle"></i>
-                        </div>
-                        <h2 class="perfil-nombre">{{ usuario if usuario else 'Usuario' }}</h2>
+
+<div class="container-xl py-4">
+
+    <div class="profile-wrapper">
+
+        <div class="profile-card">
+
+            <!-- TOP -->
+            <div class="profile-header">
+
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <h1 class="profile-name">
+                    {{ usuario if usuario else 'Usuario' }}
+                </h1>
+
+                <p class="profile-subtitle">
+                    Continúa mejorando tu vocabulario cada día.
+                </p>
+            </div>
+
+            <!-- STATS -->
+            <div class="profile-stats">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
                     </div>
-                    
-                    <!-- Cuerpo con información -->
-                    <div class="perfil-body">
-                        <!-- Usuario -->
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <span class="info-label">Usuario:</span>
-                            <span class="info-value">{{ usuario if usuario else 'usuario_' + range(100, 999) | random }}</span>
+
+                    <div>
+                        <div class="stat-label">
+                            Nivel actual
                         </div>
-                        
-                        <!-- Miembro desde -->
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <span class="info-label">Te uniste:</span>
-                            <span class="info-value">{{ fecha_registro if fecha_registro else '15 de enero, 2025' }}</span>
-                        </div>
-                        
-                        <!-- Nivel actual -->
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <span class="info-label">Nivel actual:</span>
-                            <span class="info-value">
-                                <span class="nivel-badge">{{ nivel if nivel else '0' }}</span>
-                            </span>
-                        </div>
-                        
-                        <!-- Progreso -->
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <span class="info-label">Progreso:</span>
-                            <div class="progress-info flex-grow-1">
-                                
-                                <span class="info-value">{{ progreso if progreso else '00' }}% en el nivel actual.</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Botones de acción -->
-                        <div class="d-flex justify-content-center mt-5 pt-3">
-                            <a href="/dashboard" class="btn-perfil">
-                                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
-                            </a>
+
+                        <div class="stat-value">
+                            {{ nivel if nivel else '0' }}
                         </div>
                     </div>
                 </div>
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">
+                            Progreso
+                        </div>
+
+                        <div class="stat-value">
+                            {{ progreso if progreso else '00' }}%
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- INFO -->
+            <div class="profile-info">
+
+                <div class="info-row">
+
+                    <div class="info-left">
+
+                        <div class="info-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="info-label">
+                                Usuario
+                            </div>
+
+                            <div class="info-value">
+                                {{ usuario if usuario else 'usuario_' + range(100, 999) | random }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+
+                    <div class="info-left">
+
+                        <div class="info-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="info-label">
+                                Miembro desde
+                            </div>
+
+                            <div class="info-value">
+                                {{ fecha_registro if fecha_registro else '15 de enero, 2025' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="profile-actions">
+
+                <a href="/dashboard"
+                   class="btn btn-primary-custom">
+
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Dashboard
+                </a>
+
+            </div>
+
         </div>
     </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
+<script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
 {% endblock %}

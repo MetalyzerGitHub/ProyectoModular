@@ -1,96 +1,297 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard · LexiQuest{% endblock %}
+
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <br>
-    <div class="dashboard-header mb-5">
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            <div class="nivel-badge">
-                <i class="fas fa-star me-2"></i>Nivel <span id="nivelUsuario">{{ nivel }}</span>
-            </div>
-            <div class="progress-container" style="min-width: 200px;">
-                <div class="progress-bar-custom" id="barraProgreso" style="--progress: {{ progreso }}%;"></div>
-            </div>
-            <span class="text-secondary" id="progresoTexto">
-                {{ progreso }}% al Nivel {{ nivel_siguiente }}
-            </span>
-        </div>
 
-        <button class="btn btn-leccion" id="leccionRapida">
-            <i class="fas fa-bolt me-2"></i>Lección Rápida
-        </button>
-    </div>
+<div class="container-xl py-4">
 
-    <h3 class="mb-4" style="color: #1b2f4f; font-weight: 600;">
-        <i class="fas fa-gamepad me-2"></i>Actividades disponibles
-    </h3>
+    <div class="content-wrapper">
 
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-3">
-            <div class="glass-card">
-                <div class="actividad-imagen">
-                    <i class="fas fa-male"></i>
+        <!-- HEADER -->
+        <div class="dashboard-header mb-5">
+
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                <div class="nivel-badge">
+                    <i class="fas fa-star me-2"></i>
+                    Nivel <span id="nivelUsuario">{{ nivel }}</span>
                 </div>
-                <h4 class="actividad-titulo">Hangman</h4>
-                <div class="descripcion mb-4">Escoge las letras correctas.</div>
-                <button class="btn btn-comenzar" id="hangman">
-                    Comenzar <i class="fas fa-arrow-right ms-2"></i>
-                </button>
-            </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="glass-card">
-                <div class="actividad-imagen">
-                    <i class="fas fa-link"></i>
+                <div class="progress-container"
+                     style="min-width: 220px;">
+
+                    <div class="progress-bar-custom"
+                         id="barraProgreso"
+                         style="--progress: {{ progreso }}%;">
+                    </div>
                 </div>
-                <h4 class="actividad-titulo">Match</h4>
-                <div class="descripcion mb-4">Relaciona las palabras correctamente.</div>
-                <button class="btn btn-comenzar" id="match">
-                    Comenzar <i class="fas fa-arrow-right ms-2"></i>
-                </button>
+
+                <span class="text-secondary"
+                      id="progresoTexto">
+
+                    {{ progreso }}% al Nivel {{ nivel_siguiente }}
+                </span>
             </div>
+
+            <button class="btn btn-leccion"
+                    id="leccionRapida">
+
+                <i class="fas fa-bolt me-2"></i>
+                Lección Rápida
+            </button>
         </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="glass-card">
-                <div class="actividad-imagen">
-                    <i class="fas fa-comments"></i>
+        <!-- TITLE -->
+        <h3 class="section-title mb-4">
+            <i class="fas fa-gamepad me-2"></i>
+            Actividades disponibles
+        </h3>
+
+        <!-- DESKTOP GRID -->
+        <div class="row g-4 d-none d-md-flex">
+
+            <!-- Hangman -->
+            <div class="col-md-6 col-lg-3">
+                <div class="glass-card text-center">
+
+                    <div class="actividad-imagen">
+                        <i class="fas fa-male"></i>
+                    </div>
+
+                    <h4 class="actividad-titulo">
+                        Hangman
+                    </h4>
+
+                    <div class="descripcion mb-4">
+                        Escoge las letras correctas.
+                    </div>
+
+                    <button class="btn btn-comenzar"
+                            id="hangman">
+
+                        Comenzar
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
                 </div>
-                <h4 class="actividad-titulo">Quiz</h4>
-                <div class="descripcion mb-4">Selecciona la palabra correcta.</div>
-                <button class="btn btn-comenzar" id="quiz">
-                    Comenzar <i class="fas fa-arrow-right ms-2"></i>
-                </button>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="glass-card">
-                <div class="actividad-imagen">
-                    <i class="fas fa-exchange-alt"></i>
+            <!-- Match -->
+            <div class="col-md-6 col-lg-3">
+                <div class="glass-card text-center">
+
+                    <div class="actividad-imagen">
+                        <i class="fas fa-link"></i>
+                    </div>
+
+                    <h4 class="actividad-titulo">
+                        Match
+                    </h4>
+
+                    <div class="descripcion mb-4">
+                        Relaciona las palabras correctamente.
+                    </div>
+
+                    <button class="btn btn-comenzar"
+                            id="match">
+
+                        Comenzar
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
                 </div>
-                <h4 class="actividad-titulo">Word Unscramble</h4>
-                <div class="descripcion mb-4">Reordena la palabra.</div>
-                <button class="btn btn-comenzar" id="unscramble">
-                    Comenzar <i class="fas fa-arrow-right ms-2"></i>
-                </button>
             </div>
-        </div>
-    </div>
 
-    <div class="mt-5 text-center text-secondary">
-        <i class="fa-solid fa-hand"></i>
-        <span id="mensajeBienvenida"></span>
+            <!-- Quiz -->
+            <div class="col-md-6 col-lg-3">
+                <div class="glass-card text-center">
+
+                    <div class="actividad-imagen">
+                        <i class="fas fa-comments"></i>
+                    </div>
+
+                    <h4 class="actividad-titulo">
+                        Quiz
+                    </h4>
+
+                    <div class="descripcion mb-4">
+                        Selecciona la palabra correcta.
+                    </div>
+
+                    <button class="btn btn-comenzar"
+                            id="quiz">
+
+                        Comenzar
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unscramble -->
+            <div class="col-md-6 col-lg-3">
+                <div class="glass-card text-center">
+
+                    <div class="actividad-imagen">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+
+                    <h4 class="actividad-titulo">
+                        Word Unscramble
+                    </h4>
+
+                    <div class="descripcion mb-4">
+                        Reordena la palabra.
+                    </div>
+
+                    <button class="btn btn-comenzar"
+                            id="unscramble">
+
+                        Comenzar
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MOBILE CAROUSEL -->
+        <div id="gamesCarousel"
+             class="carousel slide d-md-none"
+             data-bs-ride="false">
+
+            <div class="carousel-inner">
+
+                <!-- Hangman -->
+                <div class="carousel-item active">
+                    <div class="glass-card text-center">
+
+                        <div class="actividad-imagen">
+                            <i class="fas fa-male"></i>
+                        </div>
+
+                        <h4 class="actividad-titulo">
+                            Hangman
+                        </h4>
+
+                        <div class="descripcion mb-4">
+                            Escoge las letras correctas.
+                        </div>
+
+                        <button class="btn btn-comenzar"
+                                id="hangmanMobile">
+
+                            Comenzar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Match -->
+                <div class="carousel-item">
+                    <div class="glass-card text-center">
+
+                        <div class="actividad-imagen">
+                            <i class="fas fa-link"></i>
+                        </div>
+
+                        <h4 class="actividad-titulo">
+                            Match
+                        </h4>
+
+                        <div class="descripcion mb-4">
+                            Relaciona las palabras correctamente.
+                        </div>
+
+                        <button class="btn btn-comenzar"
+                                id="matchMobile">
+
+                            Comenzar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz -->
+                <div class="carousel-item">
+                    <div class="glass-card text-center">
+
+                        <div class="actividad-imagen">
+                            <i class="fas fa-comments"></i>
+                        </div>
+
+                        <h4 class="actividad-titulo">
+                            Quiz
+                        </h4>
+
+                        <div class="descripcion mb-4">
+                            Selecciona la palabra correcta.
+                        </div>
+
+                        <button class="btn btn-comenzar"
+                                id="quizMobile">
+
+                            Comenzar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unscramble -->
+                <div class="carousel-item">
+                    <div class="glass-card text-center">
+
+                        <div class="actividad-imagen">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+
+                        <h4 class="actividad-titulo">
+                            Word Unscramble
+                        </h4>
+
+                        <div class="descripcion mb-4">
+                            Reordena la palabra.
+                        </div>
+
+                        <button class="btn btn-comenzar"
+                                id="unscrambleMobile">
+
+                            Comenzar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CONTROLS -->
+            <button class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#gamesCarousel"
+                    data-bs-slide="prev">
+
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#gamesCarousel"
+                    data-bs-slide="next">
+
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <!-- WELCOME -->
+        <div class="mt-5 text-center text-secondary">
+            <i class="fa-solid fa-hand"></i>
+            <span id="mensajeBienvenida"></span>
+        </div>
+
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

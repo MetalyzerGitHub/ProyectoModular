@@ -3,121 +3,286 @@
 {% block title %}Unscramble · LexiQuest{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/unscramble.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/unscramble.css') }}">
 {% endblock %}
 
 {% block content %}
-    <!-- CONTENEDOR DEL JUEGO -->
-    <div class="container">
-        <div class="game-container">
-            <h2>
-                <i class="fas fa-sort-alpha-down"></i>
-                Reordena la palabra
-            </h2>
 
-            <!-- Intentos restantes -->
-            <div class="text-center">
-                <span class="attempts-badge">
-                    <i class="fas fa-heart"></i>
-                    Intentos restantes: {{ attempts }}
-                </span>
+<div class="container-xl py-4">
+
+    <div class="unscramble-wrapper">
+
+        <!-- HEADER -->
+        <div class="game-header">
+
+            <div>
+
+                <div class="game-badge">
+                    <i class="fas fa-puzzle-piece me-2"></i>
+                    Minijuego
+                </div>
+
+                <h1 class="game-title">
+                    <i class="fas fa-sort-alpha-down me-2"></i>
+                    Reordena la palabra
+                </h1>
+
+                <p class="game-subtitle">
+                    Arrastra las letras para formar la palabra correcta.
+                </p>
             </div>
 
-            <div class="instructions">
-                <i class="fas fa-arrows-alt me-2"></i>
-                Arrastra las letras al área inferior para formar la palabra correcta
+            <div class="attempts-card">
+                <i class="fas fa-heart"></i>
+                <span>{{ attempts }}</span>
+                <small>Intentos</small>
             </div>
+
+        </div>
+
+        <!-- GAME CARD -->
+        <div class="game-card">
 
             {% if not result or result == "retry" %}
-                <div class="game-area">
-                    <!-- Contenedor de letras disponibles -->
-                    <div class="letters-container" id="letters">
+
+                <!-- INSTRUCTIONS -->
+                <div class="instructions-box">
+
+                    <i class="fas fa-hand-pointer me-2"></i>
+
+                    Arrastra las letras hacia el área inferior
+                    y ordénalas correctamente.
+                </div>
+
+                <!-- LETTERS -->
+                <div class="letters-section">
+
+                    <h5 class="section-label">
+                        Letras disponibles
+                    </h5>
+
+                    <div class="letters-container"
+                         id="letters">
+
                         {% for letter in letters %}
-                            <div class="letter" draggable="true">{{ letter }}</div>
+                            <div class="letter"
+                                 draggable="true">
+
+                                {{ letter }}
+                            </div>
                         {% endfor %}
                     </div>
+                </div>
 
-                    <!-- Zona de destino para ordenar -->
+                <!-- DROPZONE -->
+                <div class="dropzone-section">
+
+                    <h5 class="section-label">
+                        Tu respuesta
+                    </h5>
+
                     <div class="drop-zone" id="dropzone">
-                        <span class="text-muted" style="opacity: 0.5;">Arrastra las letras aquí</span>
+                        <span class="text-muted">
+                            Arrastra letras aquí
+                        </span>
+                    </div>
+                </div>
+
+                <!-- FORM -->
+                <form method="POST"
+                      action="{{ url_for('unscramble_check') }}"
+                      id="unscrambleForm">
+
+                    <input type="hidden"
+                           name="user_word"
+                           id="user_word">
+
+                    <div class="button-container">
+
+                        <button type="submit"
+                                class="btn btn-primary-custom"
+                                onclick="return prepareWord()">
+
+                            <i class="fas fa-check-circle me-2"></i>
+                            Verificar palabra
+                        </button>
+
+                        {% if leccion_mode %}
+
+                            <a href="/leccion/cancel"
+                               onclick="return confirm('¿Cancelar lección?');"
+                               class="btn btn-outline-custom">
+
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </a>
+
+                        {% else %}
+
+                            <a href="{{ url_for('dashboard') }}"
+                               class="btn btn-outline-custom">
+
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Dashboard
+                            </a>
+
+                        {% endif %}
+                    </div>
+                </form>
+
+                {% if result == "retry" %}
+
+                    <div class="retry-message">
+
+                        <i class="fas fa-circle-exclamation me-2"></i>
+
+                        Incorrecto. Intenta nuevamente.
                     </div>
 
-                    <!-- Formulario oculto para enviar la palabra -->
-                    <form method="POST" action="{{ url_for('unscramble_check') }}" id="unscrambleForm">
-                        <input type="hidden" name="user_word" id="user_word">
-                        <div class="button-container">
-                            <button type="submit" class="btn-game" onclick="prepareWord()">
-                                <i class="fas fa-check-circle me-2"></i>Verificar palabra
-                            </button>
-                            {% if leccion_mode %}
-                                <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-game-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
-                            {% else %}
-                                <a href="{{ url_for('dashboard') }}" class="btn-game-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
-                            {% endif %}
-                        </div>
-                    </form>
+                {% endif %}
 
-                    {% if result == "retry" %}
-                        <div class="retry-message text-center">
-                            <i class="fas fa-times-circle me-2"></i>
-                            Incorrecto, intenta de nuevo.
-                        </div>
-                    {% endif %}
-                </div>
             {% endif %}
 
+            <!-- SUCCESS -->
             {% if result == "correct" %}
-                <div class="result-message correct-message">
-                    <i class="fas fa-trophy me-2"></i>¡Correcto! 🎉
-                </div>
-                
-                <div class="translation-box">
+
+                <div class="result-card success-card">
+
+                    <div class="result-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+
+                    <h2>¡Correcto!</h2>
+
                     <p>
-                        <i class="fas fa-language me-2"></i>
-                        Traducción: <strong>{{ meaning }}</strong>
+                        Excelente trabajo 🎉
                     </p>
                 </div>
 
+                <div class="translation-box">
+
+                    <div class="translation-label">
+                        Traducción
+                    </div>
+
+                    <div class="translation-word">
+                        {{ meaning }}
+                    </div>
+                </div>
+
                 <div class="button-container">
+
                     {% if leccion_mode %}
-                        <a href="/leccion/next" class="btn-game"><i class="fas fa-arrow-right me-2"></i>Continuar</a>
-                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-game-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+
+                        <a href="/leccion/next"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Continuar
+                        </a>
+
+                        <a href="/leccion/cancel"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </a>
+
                     {% else %}
-                        <a href="{{ url_for('unscramble') }}" class="btn-game"><i class="fas fa-redo-alt me-2"></i>Nuevo juego</a>
-                        <a href="{{ url_for('dashboard') }}" class="btn-game-outline"><i class="fas fa-arrow-left me-2"></i>Regresar al Dashboard</a>
+
+                        <a href="{{ url_for('unscramble') }}"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-rotate-right me-2"></i>
+                            Nuevo juego
+                        </a>
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Dashboard
+                        </a>
+
                     {% endif %}
                 </div>
-                
+
             {% elif result == "fail" %}
-                <div class="result-message incorrect-message">
-                    <i class="fas fa-skull me-2"></i>Sin intentos ❌
-                </div>
-                
-                <div class="translation-box">
+
+                <div class="result-card fail-card">
+
+                    <div class="result-icon">
+                        <i class="fas fa-xmark"></i>
+                    </div>
+
+                    <h2>Sin intentos</h2>
+
                     <p>
-                        <i class="fas fa-check-circle me-2" style="color: #28a745;"></i>
-                        Palabra correcta: <strong>{{ correct_word }}</strong>
+                        La palabra correcta era:
                     </p>
-                    <p class="mt-3">
-                        <i class="fas fa-language me-2"></i>
-                        Traducción: <strong>{{ meaning }}</strong>
-                    </p>
+
+                    <div class="correct-answer">
+                        {{ correct_word }}
+                    </div>
+                </div>
+
+                <div class="translation-box">
+
+                    <div class="translation-label">
+                        Traducción
+                    </div>
+
+                    <div class="translation-word">
+                        {{ meaning }}
+                    </div>
                 </div>
 
                 <div class="button-container">
+
                     {% if leccion_mode %}
-                        <a href="/leccion/next" class="btn-game"><i class="fas fa-arrow-right me-2"></i>Continuar</a>
-                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-game-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+
+                        <a href="/leccion/next"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Continuar
+                        </a>
+
+                        <a href="/leccion/cancel"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </a>
+
                     {% else %}
-                        <a href="{{ url_for('unscramble') }}" class="btn-game"><i class="fas fa-redo-alt me-2"></i>Nuevo juego</a>
-                        <a href="{{ url_for('dashboard') }}" class="btn-game-outline"><i class="fas fa-arrow-left me-2"></i>Regresar al Dashboard</a>
+
+                        <a href="{{ url_for('unscramble') }}"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-rotate-right me-2"></i>
+                            Nuevo juego
+                        </a>
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Dashboard
+                        </a>
+
                     {% endif %}
                 </div>
+
             {% endif %}
+
         </div>
     </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/unscramble.js') }}"></script>
+<script src="{{ url_for('static', filename='js/unscramble.js') }}"></script>
 {% endblock %}

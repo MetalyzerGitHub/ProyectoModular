@@ -3,108 +3,260 @@
 {% block title %}Quiz · LexiQuest{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/quiz.css') }}">
 {% endblock %}
 
 {% block content %}
-    <!-- Elemento decorativo -->
-    <div class="decor-dot"></div>
 
-    <!-- CONTENEDOR DEL QUIZ -->
-    <div class="container">
-        <div class="quiz-container">
-            <h2>
-                <i class="fas fa-question-circle"></i>
-                Selecciona la palabra correcta
-            </h2>
+<div class="container-xl py-4">
 
-            <div class="instructions">
-                <i class="fas fa-lightbulb me-2"></i>
-                Selecciona la opción que mejor representa el término:
+    <div class="quiz-wrapper">
+
+        <!-- HEADER -->
+        <div class="quiz-header">
+
+            <div>
+
+                <div class="quiz-badge">
+                    <i class="fas fa-brain me-2"></i>
+                    Minijuego
+                </div>
+
+                <h1 class="quiz-title">
+                    <i class="fas fa-question-circle me-2"></i>
+                    Selecciona la palabra correcta
+                </h1>
+
+                <p class="quiz-subtitle">
+                    Elige la opción que coincida con el significado.
+                </p>
             </div>
 
-            <!-- Significado -->
+        </div>
+
+        <!-- CARD -->
+        <div class="quiz-card">
+
+            <!-- INSTRUCTIONS -->
+            <div class="instructions-box">
+
+                <i class="fas fa-lightbulb me-2"></i>
+
+                Selecciona la palabra que mejor representa el término mostrado.
+            </div>
+
+            <!-- MEANING -->
             <div class="meaning-box">
-                <p>“{{ meaning }}”</p>
+
+                <div class="meaning-label">
+                    Significado
+                </div>
+
+                <div class="meaning-word">
+                    “{{ meaning }}”
+                </div>
             </div>
 
             {% if not answered %}
-                <!-- Formulario de opciones -->
-                <form method="POST" action="{{ url_for('quiz_answer') }}">
-                    <input type="hidden" name="meaning" value="{{ meaning }}">
+
+                <form method="POST"
+                      action="{{ url_for('quiz_answer') }}">
+
+                    <input type="hidden"
+                           name="meaning"
+                           value="{{ meaning }}">
 
                     <div class="options-container">
+
                         {% for option in options %}
+
                             <label class="option-item">
-                                <input type="radio" name="option" value="{{ option.id_word }}" required>
-                                <span class="option-text">{{ option.spelling }}</span>
+
+                                <input type="radio"
+                                       name="option"
+                                       value="{{ option.id_word }}"
+                                       required>
+
+                                <span class="custom-radio"></span>
+
+                                <span class="option-text">
+                                    {{ option.spelling }}
+                                </span>
+
                             </label>
+
                         {% endfor %}
+
                     </div>
 
                     <div class="button-container">
-                        <button type="submit" class="btn-quiz">
-                            <i class="fas fa-check-circle me-2"></i>Responder
+
+                        <button type="submit"
+                                class="btn btn-primary-custom">
+
+                            <i class="fas fa-check-circle me-2"></i>
+                            Responder
                         </button>
+
                         {% if leccion_mode %}
-                            <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-quiz-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+
+                            <a href="/leccion/cancel"
+                               onclick="return confirm('¿Cancelar lección?');"
+                               class="btn btn-outline-custom">
+
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </a>
+
                         {% else %}
-                            <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+
+                            <a href="{{ url_for('dashboard') }}"
+                               class="btn btn-outline-custom">
+
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Dashboard
+                            </a>
+
                         {% endif %}
                     </div>
                 </form>
 
             {% else %}
-                <!-- Resultados -->
-                <div class="result-message {% if is_correct %}correct-message{% else %}incorrect-message{% endif %}">
-                    {% if is_correct %}
-                        <i class="fas fa-trophy me-2"></i>¡Correcto! 🎉
-                    {% else %}
-                        <i class="fas fa-times-circle me-2"></i>Incorrecto ❌
-                    {% endif %}
+
+                <!-- RESULT -->
+                <div class="result-card {% if is_correct %}success-card{% else %}fail-card{% endif %}">
+
+                    <div class="result-icon">
+
+                        {% if is_correct %}
+                            <i class="fas fa-trophy"></i>
+                        {% else %}
+                            <i class="fas fa-xmark"></i>
+                        {% endif %}
+
+                    </div>
+
+                    <h2>
+
+                        {% if is_correct %}
+                            ¡Correcto!
+                        {% else %}
+                            Incorrecto
+                        {% endif %}
+
+                    </h2>
+
+                    <p>
+
+                        {% if is_correct %}
+                            Excelente trabajo 🎉
+                        {% else %}
+                            Sigue practicando 💪
+                        {% endif %}
+
+                    </p>
                 </div>
 
-                <ul class="answers-list">
-                {% for option in options %}
-                    <li class="answer-item 
-                        {% if option.id_word == correct %}
-                            answer-correct
-                        {% elif option.id_word == selected %}
-                            answer-incorrect
-                        {% else %}
-                            answer-neutral
-                        {% endif %}">
-                        <span>
+                <!-- ANSWERS -->
+                <div class="answers-container">
+
+                    {% for option in options %}
+
+                        <div class="answer-item
+
                             {% if option.id_word == correct %}
-                                <i class="fas fa-check-circle answer-icon me-2"></i>
+                                answer-correct
                             {% elif option.id_word == selected %}
-                                <i class="fas fa-times-circle answer-icon me-2"></i>
+                                answer-incorrect
+                            {% else %}
+                                answer-neutral
                             {% endif %}
-                            {{ option.spelling }}
-                        </span>
-                        {% if option.id_word == correct %}
-                            <span class="badge" style="background: #28a745; color: white; padding: 0.3rem 1rem; border-radius: 50px;">Correcta</span>
-                        {% elif option.id_word == selected %}
-                            <span class="badge" style="background: #dc3545; color: white; padding: 0.3rem 1rem; border-radius: 50px;">Tu respuesta</span>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
+                        ">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                {% if option.id_word == correct %}
+
+                                    <div class="answer-status success-status">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+
+                                {% elif option.id_word == selected %}
+
+                                    <div class="answer-status fail-status">
+                                        <i class="fas fa-times"></i>
+                                    </div>
+
+                                {% endif %}
+
+                                <span class="answer-word">
+                                    {{ option.spelling }}
+                                </span>
+                            </div>
+
+                            {% if option.id_word == correct %}
+
+                                <span class="answer-badge success-badge">
+                                    Correcta
+                                </span>
+
+                            {% elif option.id_word == selected %}
+
+                                <span class="answer-badge fail-badge">
+                                    Tu respuesta
+                                </span>
+
+                            {% endif %}
+                        </div>
+
+                    {% endfor %}
+                </div>
 
                 <div class="button-container">
+
                     {% if leccion_mode %}
-                        <a href="/leccion/next" class="btn-quiz"><i class="fas fa-arrow-right me-2"></i>Continuar</a>
-                        <a href="/leccion/cancel" onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');" class="btn-quiz-outline"><i class="fas fa-times me-2"></i>Cancelar lección</a>
+
+                        <a href="/leccion/next"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Continuar
+                        </a>
+
+                        <a href="/leccion/cancel"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </a>
+
                     {% else %}
-                        <a href="{{ url_for('quiz') }}" class="btn-quiz"><i class="fas fa-redo-alt me-2"></i>Nuevo intento</a>
-                        <a href="{{ url_for('dashboard') }}" class="btn-quiz-outline"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
+
+                        <a href="{{ url_for('quiz') }}"
+                           class="btn btn-primary-custom">
+
+                            <i class="fas fa-rotate-right me-2"></i>
+                            Nuevo intento
+                        </a>
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn btn-outline-custom">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Dashboard
+                        </a>
+
                     {% endif %}
                 </div>
+
             {% endif %}
         </div>
     </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='js/quiz.js') }}">
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
 {% endblock %}
