@@ -8,24 +8,27 @@
 /* HEADER */
 
 .hangman-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.hangman-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0; 
 }
 
 .game-badge {
     display: inline-flex;
     align-items: center;
-
     background: rgba(37,99,235,0.1);
-
     color: #2563eb;
-
     padding: 0.7rem 1.2rem;
-
     border-radius: 999px;
-
     font-weight: 600;
-
-    margin-bottom: 1rem;
+    margin-bottom: 0;
 }
 
 .hangman-title {
@@ -35,27 +38,51 @@
 
     color: #0f172a;
 
-    margin-bottom: 0.7rem;
+    margin-bottom: 0;
 }
 
-.hangman-subtitle {
-    color: #64748b;
-    font-size: 1.05rem;
-    margin-bottom: 1.5rem;
+/* FILA DE INSTRUCCIONES + INTENTOS */
+.hangman-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0;               /* separación con la imagen del ahorcado */
+    flex: 1;
+}
+
+.instructions-box {    
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1d4ed8;
+    padding: 1rem 1.2rem;
+    border-radius: 18px; 
+    font-weight: 500;
+    margin-bottom: 0;
+    flex: 1;                           /* para que ocupe el espacio disponible */
+}
+
+/* Ajuste responsive para que en móviles la fila se apile bien */
+@media (max-width: 768px) {
+    .hangman-info-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .hangman-info-row .instructions-box,
+    .hangman-info-row .attempts-badge {
+        text-align: center;
+        justify-content: center;
+    }
 }
 
 .attempts-badge {
     display: inline-flex;
     align-items: center;
-
     background: rgba(239,68,68,0.1);
-
     color: #dc2626;
-
     padding: 0.8rem 1.2rem;
-
     border-radius: 999px;
-
     font-weight: 700;
 }
 

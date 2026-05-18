@@ -15,39 +15,42 @@
 
         <!-- HEADER -->
         <div class="hangman-header">
-
-            <div class="game-badge">
-                <i class="fas fa-gamepad me-2"></i>
-                Minijuego
+            <div class="hangman-header-row">
+                <div class="game-badge">
+                    <i class="fas fa-gamepad me-2"></i>
+                    Minijuego
+                </div>
+                <h1 class="hangman-title">
+                    <i class="fas fa-skull-crossbones me-2"></i>
+                    Hangman
+                </h1>
             </div>
-
-            <h1 class="hangman-title">
-                <i class="fas fa-skull-crossbones me-2"></i>
-                Hangman
-            </h1>
-
-            <p class="hangman-subtitle">
-                Adivina la palabra antes de quedarte sin intentos.
-            </p>
-
-            <div class="attempts-badge">
-                <i class="fas fa-heart me-2"></i>
-                {{ attempts }} intentos restantes
-            </div>
-
         </div>
 
         <!-- CARD -->
         <div class="hangman-card">
 
+            <!-- FILA INSTRUCCIONES + INTENTOS -->
+            <div class="hangman-info-row">
+                <div class="instructions-box">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Adivina la palabra antes de quedarte sin intentos.
+                </div>
+                <div class="attempts-badge">
+                    <i class="fas fa-heart me-2"></i>
+                    {{ attempts }} intentos
+                </div>
+            </div>
+            <br>
+
             <!-- IMAGE -->
-            <div class="game-image">
+            <!-- <div class="game-image">
 
                 <img
                     src="{{ url_for('static', filename=img_path) }}"
                     alt="Estado del ahorcado">
 
-            </div>
+            </div> -->
 
             <!-- WORD -->
             <div class="word-box">

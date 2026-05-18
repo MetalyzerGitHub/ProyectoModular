@@ -7,7 +7,8 @@ CREATE TABLE usuarios (
     -- correo VARCHAR(150) NOT NULL UNIQUE,
     contrasena_hash VARCHAR(255) NOT NULL,
     nivel DECIMAL(5, 2) DEFAULT '0',
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    skill decimal(4,3) DEFAULT '0.500'
 );
 
 CREATE TABLE words (
@@ -17,7 +18,8 @@ CREATE TABLE words (
     frequency DECIMAL(5,3),
     part_of_speech VARCHAR(25),
     meaning VARCHAR(255) CHARACTER SET 'latin1' COLLATE 'latin1_spanish_ci',
-    img_path VARCHAR(255)
+    img_path VARCHAR(255),
+    difficulty decimal(4,3) DEFAULT '0.500'
 );
 
 -- IMPORTAR LOS DATOS DEL CSV (Table Data Import Wizard) A LA TABLA "words"
@@ -56,18 +58,22 @@ VALUES
 ('Quiz', 'Selecciona la palabra correcta. '),
 ('Word Unscramble', 'Reordena la palabra. ');
 
-ALTER TABLE words ADD difficulty DECIMAL(4,3) DEFAULT 0.500;
+-- ALTER TABLE words ADD difficulty DECIMAL(4,3) DEFAULT 0.500;
+-- ALTER TABLE usuarios ADD skill DECIMAL(4,3) DEFAULT 0.500;
+
 -- Normalizar frecuencia y longitud, luego calcular dificultad
 SET @min_freq = (SELECT MIN(frequency) FROM words);
 SET @max_freq = (SELECT MAX(frequency) FROM words);
 SET @min_len  = (SELECT MIN(wlen) FROM words);
 SET @max_len  = (SELECT MAX(wlen) FROM words);
 
-UPDATE words -- desactivar safe mode para ejecutar
+-- desactivar safe mode para ejecutar
+-- o poner cualquier filtro WHERE prescindible
+UPDATE words 
 SET difficulty = (
     (1.0 - (frequency - @min_freq) / NULLIF(@max_freq - @min_freq, 0)) 
     + 
     (wlen - @min_len) / NULLIF(@max_len - @min_len, 0)
 ) / 2;
-ALTER TABLE usuarios ADD skill DECIMAL(4,3) DEFAULT 0.500;
+
     

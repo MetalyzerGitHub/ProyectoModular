@@ -3,55 +3,90 @@
 {% block title %}Match · LexiQuest{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/match.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/match.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="match-page">
-    <div class="container py-4">
-        <div class="game-container">
-            
-            <div class="game-header">
-                <div class="game-icon">
-                    <i class="fas fa-puzzle-piece"></i>
+
+<div class="container-xl py-4">
+
+    <div class="match-wrapper">
+
+        <!-- HEADER -->
+        <div class="match-header">
+
+            <div class="match-header-row">
+
+                <div class="match-badge">
+                    <i class="fas fa-puzzle-piece me-2"></i>
+                    Minijuego
                 </div>
 
-                <h2>Relaciona las palabras</h2>
+                <h1 class="match-title">
+                    <i class="fas fa-puzzle-piece me-2"></i>
+                    Match
+                </h1>
 
-                <p class="game-subtitle">
-                    Conecta cada palabra en inglés con su significado correcto.
-                </p>
             </div>
+        </div>
 
-            <div class="instructions">
-                <i class="fas fa-info-circle"></i>
+        <!-- CARD -->
+        <div class="match-card-container">
+
+            <!-- INSTRUCTIONS -->
+            <div class="instructions-box">
+
+                <i class="fas fa-lightbulb me-2"></i>
+
                 Haz clic en una palabra en inglés y luego en su significado.
+
             </div>
 
             <form method="POST" id="matchForm">
+
                 {% for word in words %}
-                    <input type="hidden" name="{{ word.id_word }}" id="answer_{{ word.id_word }}" value="">
+                    <input type="hidden"
+                           name="{{ word.id_word }}"
+                           id="answer_{{ word.id_word }}"
+                           value="">
                 {% endfor %}
 
+                <!-- ARENA -->
                 <div class="match-arena" id="matchArena">
 
-                    <svg class="lines-svg" id="linesSvg" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="lines-svg"
+                         id="linesSvg"
+                         xmlns="http://www.w3.org/2000/svg">
+
                         <defs>
-                            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                                <circle cx="3" cy="3" r="2" fill="#1b2f4f" opacity="0.7"/>
+                            <marker id="arrowhead"
+                                    markerWidth="6"
+                                    markerHeight="6"
+                                    refX="3"
+                                    refY="3"
+                                    orient="auto">
+
+                                <circle cx="3"
+                                        cy="3"
+                                        r="2"
+                                        fill="#2563eb"
+                                        opacity="0.7"/>
                             </marker>
                         </defs>
                     </svg>
 
-                    <!-- LEFT COLUMN -->
+                    <!-- LEFT -->
                     <div class="column column-left" id="columnLeft">
+
                         <div class="column-header">
                             <i class="fas fa-language"></i>
                             Inglés
                         </div>
 
                         {% for word in words %}
-                        <div class="match-card left-card"
+
+                        <div class="match-option left-card"
                              data-id="{{ word.id_word }}"
                              data-label="{{ word.spelling }}"
                              id="left_{{ word.id_word }}">
@@ -61,19 +96,23 @@
                             <span class="card-text">
                                 {{ word.spelling }}
                             </span>
+
                         </div>
+
                         {% endfor %}
                     </div>
 
-                    <!-- RIGHT COLUMN -->
+                    <!-- RIGHT -->
                     <div class="column column-right" id="columnRight">
+
                         <div class="column-header">
                             <i class="fas fa-book"></i>
                             Significado
                         </div>
 
                         {% for meaning in meanings %}
-                        <div class="match-card right-card"
+
+                        <div class="match-option right-card"
                              data-meaning="{{ meaning }}"
                              id="right_{{ loop.index }}">
 
@@ -82,54 +121,81 @@
                             </span>
 
                             <span class="card-dot right-dot"></span>
+
                         </div>
+
                         {% endfor %}
                     </div>
                 </div>
 
-                <!-- MOBILE HELP -->
+                <!-- MOBILE -->
                 <div class="mobile-help">
-                    <i class="fas fa-mobile-alt"></i>
-                    En pantallas pequeñas puedes desplazarte verticalmente para ver todas las conexiones.
+
+                    <i class="fas fa-mobile-alt me-2"></i>
+
+                    En pantallas pequeñas puedes desplazarte para ver todas las conexiones.
+
                 </div>
 
                 <!-- PROGRESS -->
-                <div class="progress-bar-wrapper">
+                <div class="progress-wrapper">
+
                     <div class="progress-label">
-                        <span id="connectedCount">0</span> / {{ words|length }} conectadas
+                        <span id="connectedCount">0</span>
+                        / {{ words|length }} conectadas
                     </div>
 
                     <div class="progress-track">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-fill"
+                             id="progressFill"
+                             style="width:0%">
+                        </div>
                     </div>
                 </div>
 
                 <!-- BUTTONS -->
                 <div class="button-container">
 
-                    <button type="button" id="resetBtn" class="btn-game-outline">
+                    <button type="button"
+                            id="resetBtn"
+                            class="btn-outline-custom">
+
                         <i class="fas fa-undo me-2"></i>
                         Reiniciar
+
                     </button>
 
-                    <button type="submit" class="btn-game" id="submitBtn" disabled>
+                    <button type="submit"
+                            class="btn-primary-custom"
+                            id="submitBtn"
+                            disabled>
+
                         <i class="fas fa-check-circle me-2"></i>
                         Verificar respuestas
+
                     </button>
 
                     {% if leccion_mode %}
+
                         <a href="/leccion/cancel"
                            onclick="return confirm('¿Estás seguro?');"
-                           class="btn-game-outline">
+                           class="btn-outline-custom">
 
                             <i class="fas fa-times me-2"></i>
                             Cancelar lección
+
                         </a>
+
                     {% else %}
-                        <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn-outline-custom">
+
                             <i class="fas fa-arrow-left me-2"></i>
-                            Regresar
+                            Dashboard
+
                         </a>
+
                     {% endif %}
                 </div>
 
@@ -137,8 +203,9 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/match.js') }}"></script>
+<script src="{{ url_for('static', filename='js/match.js') }}"></script>
 {% endblock %}

@@ -13,3 +13,9 @@ mysql-connector-python
 Werkzeug
 Flask
 python-dotenv
+
+Para los ejemplos y definiciones:
+instalar LLM ollama
+instlar el modelo, en este caso llama3.2:3b
+    ollama pull llama3.2:3b
+librerias ollama pandas tqdm -> pip install ollama pandas tqdm

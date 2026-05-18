@@ -16,29 +16,19 @@
         <!-- HEADER -->
         <div class="game-header">
 
-            <div>
+            <div class="game-header-row">
 
                 <div class="game-badge">
                     <i class="fas fa-puzzle-piece me-2"></i>
                     Minijuego
-                </div>
+                </div>                
 
                 <h1 class="game-title">
                     <i class="fas fa-sort-alpha-down me-2"></i>
-                    Reordena la palabra
+                    Word Unscramble
                 </h1>
 
-                <p class="game-subtitle">
-                    Arrastra las letras para formar la palabra correcta.
-                </p>
             </div>
-
-            <div class="attempts-card">
-                <i class="fas fa-heart"></i>
-                <span>{{ attempts }}</span>
-                <small>Intentos</small>
-            </div>
-
         </div>
 
         <!-- GAME CARD -->
@@ -47,13 +37,20 @@
             {% if not result or result == "retry" %}
 
                 <!-- INSTRUCTIONS -->
-                <div class="instructions-box">
+                 <div class="game-header-row">
 
-                    <i class="fas fa-hand-pointer me-2"></i>
-
-                    Arrastra las letras hacia el área inferior
-                    y ordénalas correctamente.
-                </div>
+                    <div class="instructions-box">
+                        <i class="fas fa-hand-pointer me-2"></i>
+                        Arrastra las letras hacia el área inferior
+                        y ordénalas correctamente.
+                    </div>
+                    
+                    <div class="attempts-badge">
+                        <i class="fas fa-heart me-2"></i>
+                        {{attempts}} Intentos
+                    </div>
+                 </div>
+                
 
                 <!-- LETTERS -->
                 <div class="letters-section">

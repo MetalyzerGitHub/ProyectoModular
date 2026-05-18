@@ -3,118 +3,169 @@
 {% block title %}Resultado · LexiQuest{% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/match.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/match.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="match-page">
-    <div class="container py-4">
 
-        <div class="result-container">
+<div class="container-xl py-4">
 
-            <div class="game-header">
-                <div class="game-icon">
-                    <i class="fas fa-clipboard-check"></i>
+    <div class="match-wrapper">
+
+        <!-- HEADER -->
+        <div class="match-header">
+
+            <div class="match-header-row">
+
+                <div class="match-badge">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Minijuego
                 </div>
 
-                <h2>Resultado</h2>
+                <h1 class="match-title">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Resultado
+                </h1>
+
             </div>
+        </div>
+
+        <!-- CARD -->
+        <div class="match-card-container">
 
             <!-- SCORE -->
-            <div class="text-center">
-                <div class="score-badge">
-                    {{ score }} / {{ total }}
-                    <small>respuestas correctas</small>
+            <div class="result-card score-card">
+
+                <div class="result-icon">
+                    <i class="fas fa-trophy"></i>
                 </div>
+
+                <h2>{{ score }} / {{ total }}</h2>
+
+                <p>respuestas correctas</p>
+
             </div>
 
-            <!-- TABLE -->
-            <div class="table-wrapper">
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>Palabra</th>
-                            <th>Tu respuesta</th>
-                            <th>Correcta</th>
-                        </tr>
-                    </thead>
+            <!-- ANSWERS -->
+            <div class="answers-container">
 
-                    <tbody>
-                    {% for r in results %}
-                        <tr>
-                            <td class="word-cell">
-                                {{ r.spelling }}
-                            </td>
+                {% for r in results %}
 
-                            <td>
-                                {% if r.is_correct %}
-                                    <span class="answer-correct">
-                                        <i class="fas fa-check-circle icon-correct"></i>
-                                        {{ r.selected }}
-                                    </span>
-                                {% else %}
-                                    <span class="answer-incorrect">
-                                        <i class="fas fa-times-circle icon-incorrect"></i>
-                                        {{ r.selected }}
-                                    </span>
-                                {% endif %}
-                            </td>
+                <div class="answer-item
+                    {% if r.is_correct %}
+                        answer-correct
+                    {% else %}
+                        answer-incorrect
+                    {% endif %}
+                ">
 
-                            <td class="correct-answer">
-                                <i class="fas fa-check-circle icon-correct"></i>
-                                {{ r.correct }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                    <div class="answer-main">
+
+                        <div class="answer-word">
+                            {{ r.spelling }}
+                        </div>
+
+                        <div class="answer-selected">
+
+                            {% if r.is_correct %}
+
+                                <i class="fas fa-check-circle me-2"></i>
+                                {{ r.selected }}
+
+                            {% else %}
+
+                                <i class="fas fa-times-circle me-2"></i>
+                                {{ r.selected }}
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    {% if not r.is_correct %}
+
+                    <div class="correct-answer">
+
+                        Correcta:
+                        <strong>{{ r.correct }}</strong>
+
+                    </div>
+
+                    {% endif %}
+                </div>
+
+                {% endfor %}
             </div>
 
             <!-- SUMMARY -->
-            <div class="summary-message text-center">
+            <div class="summary-box">
+
                 {% if score == total %}
-                    <i class="fas fa-trophy me-2" style="color: #ffc107;"></i>
+
+                    <i class="fas fa-trophy me-2"></i>
                     ¡Perfecto! Obtuviste todas las respuestas correctas.
+
                 {% elif score >= total/2 %}
+
                     <i class="fas fa-smile me-2"></i>
                     ¡Buen trabajo! Sigue practicando para mejorar.
+
                 {% else %}
+
                     <i class="fas fa-book me-2"></i>
                     Sigue estudiando, ¡la práctica hace al maestro!
+
                 {% endif %}
             </div>
 
             <!-- BUTTONS -->
             <div class="button-container">
+
                 {% if leccion_mode %}
-                    <a href="/leccion/next" class="btn-game">
+
+                    <a href="/leccion/next"
+                       class="btn-primary-custom">
+
                         <i class="fas fa-arrow-right me-2"></i>
                         Continuar
+
                     </a>
 
                     <a href="/leccion/cancel"
-                       onclick="return confirm('¿Estás seguro de que quieres cancelar la lección?');"
-                       class="btn-game-outline">
+                       onclick="return confirm('¿Cancelar lección?');"
+                       class="btn-outline-custom">
 
                         <i class="fas fa-times me-2"></i>
-                        Cancelar lección
-                    </a>
-                {% else %}
-                    <a href="{{ url_for('match') }}" class="btn-game">
-                        <i class="fas fa-redo-alt me-2"></i>
-                        Jugar otra vez
+                        Cancelar
+
                     </a>
 
-                    <a href="{{ url_for('dashboard') }}" class="btn-game-outline">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        Regresar al Dashboard
+                {% else %}
+
+                    <a href="{{ url_for('match') }}"
+                       class="btn-primary-custom">
+
+                        <i class="fas fa-rotate-right me-2"></i>
+                        Nuevo intento
+
                     </a>
+
+                    <a href="{{ url_for('dashboard') }}"
+                       class="btn-outline-custom">
+
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Dashboard
+
+                    </a>
+
                 {% endif %}
             </div>
 
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}

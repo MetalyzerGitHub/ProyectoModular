@@ -8,7 +8,13 @@
 /* HEADER */
 
 .quiz-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.quiz-header-row {
+    display: flex;
+    align-items: center;           /* Centra verticalmente badge y título */
+    justify-content: space-between; /* Badge a la izquierda, título a la derecha */
 }
 
 .quiz-badge {
@@ -24,8 +30,7 @@
     border-radius: 999px;
 
     font-weight: 600;
-
-    margin-bottom: 1rem;
+    margin-bottom: 0;   /* Elimina el margen inferior porque están en la misma línea */
 }
 
 .quiz-title {
@@ -35,12 +40,7 @@
 
     color: #0f172a;
 
-    margin-bottom: 0.7rem;
-}
-
-.quiz-subtitle {
-    color: #64748b;
-    font-size: 1.05rem;
+    margin-bottom: 0; /* Igual, elimina margen inferior */
 }
 
 /* CARD */

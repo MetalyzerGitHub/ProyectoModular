@@ -1,12 +1,16 @@
 .content-wrapper {
+    min-height: calc(100vh - 125px);
     max-width: 1250px;
     margin: 0 auto;
-    padding: 2rem 1rem 4rem;
+    padding: 2rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .section-title {
     color: #1e3a8a;
     font-weight: 700;
+    flex-shrink: 0;
 }
 
 /* HEADER */
@@ -30,28 +34,19 @@
 .glass-card {
     background: rgba(255,255,255,0.75);
     backdrop-filter: blur(12px);
-
     border-radius: 28px;
-
     border: 1px solid rgba(255,255,255,0.5);
-
-    box-shadow:
-        0 10px 30px rgba(15,23,42,0.08);
-
-    padding: 1.5rem;
-
+    box-shadow: 0 15px 35px rgba(10, 18, 30, 0.12);
+    padding: 1.2rem;
     transition:
         transform 0.25s ease,
         box-shadow 0.25s ease;
-
     overflow: hidden;
 }
 
 .glass-card:hover {
     transform: translateY(-6px);
-
-    box-shadow:
-        0 20px 40px rgba(15,23,42,0.12);
+    box-shadow: 0 20px 40px rgba(10, 18, 30, 0.12);
 }
 
 /* LEVEL */
@@ -59,13 +54,9 @@
 .nivel-badge {
     background: rgba(37, 99, 235, 0.1);
     color: #1d4ed8;
-
     border-radius: 999px;
-
     padding: 0.7rem 1.3rem;
-
     font-weight: 700;
-
     border: 1px solid rgba(37,99,235,0.15);
 }
 
@@ -81,11 +72,8 @@
 
 .progress-bar-custom {
     width: var(--progress);
-
     height: 100%;
-
     border-radius: 999px;
-
     background:
     linear-gradient(
         90deg,
@@ -94,49 +82,49 @@
     );
 }
 
+#progresoTexto {
+    color: #1e3a8a !important;  /* azul oscuro */
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 767px) {
+    #progresoTexto {
+        display: none !important;
+    }
+}
+
+
 /* QUICK LESSON */
 
 .btn-leccion {
     background: linear-gradient(90deg, #2563eb, #1d4ed8);
     border: none;
     color: white;
-
     font-weight: 600;
-
     padding: 0.9rem 1.8rem;
-
     border-radius: 999px;
-
     transition: 0.25s ease;
 }
 
 .btn-leccion:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 10px 20px rgba(37,99,235,0.25);
-
+    box-shadow: 0 10px 20px rgba(37,99,235,0.25);
     color: white;
 }
 
 /* ACTIVITY IMAGE */
 
 .actividad-imagen {
-    width: 100%;
-    height: 160px;
-
+    max-width: 100%;
+    height: 140px;
     border-radius: 22px;
-
-    margin-bottom: 1.3rem;
-
+    margin-bottom: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    font-size: 3rem;
-
+    font-size: 2.4rem;
     color: #1d4ed8;
-
     background:
     linear-gradient(
         145deg,
@@ -150,62 +138,74 @@
 .actividad-titulo {
     font-weight: 700;
     color: #1e293b;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 /* DESCRIPTION */
 
 .descripcion {
     color: #475569;
-
     background: #f8fafc;
-
-    padding: 0.8rem 1rem;
-
+    padding: 0.55rem 1rem;
     border-radius: 999px;
-
     font-size: 0.95rem;
+    margin-bottom: 0.75rem !important;
 }
 
 /* BUTTON */
 
 .btn-comenzar {
     background: linear-gradient(90deg, #2563eb, #1d4ed8);
-
     border: none;
-
     color: white;
-
     font-weight: 600;
-
-    padding: 0.8rem 1.4rem;
-
+    padding: 0.65rem 1.2rem;
     border-radius: 999px;
-
-    width: 100%;
-
     transition: 0.25s ease;
 }
 
 .btn-comenzar:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 10px 20px rgba(37,99,235,0.25);
-
+    box-shadow: 0 10px 20px rgba(37,99,235,0.25);
     color: white;
 }
 
 /* CAROUSEL */
 
-.carousel-control-prev,
+.carousel-control-prev{
+    width: 10%;
+    left: -10px;
+}
 .carousel-control-next {
     width: 10%;
+    right: -10px;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     background-color: rgba(37,99,235,0.8);
     border-radius: 50%;
-    padding: 1.2rem;
+    padding: 1.5rem;
+}
+
+.row.g-4,
+#gamesCarousel {
+    flex: 1 0 auto;
+}
+
+/* MOBILE CAROUSEL FIX */
+@media (max-width: 767px) {
+
+    #gamesCarousel .glass-card {
+        width: 75%;
+        margin: 0 auto;
+    }
+
+}
+
+/* El mensaje de bienvenida queda siempre al final */
+.mt-5.text-center.text-secondary {
+    margin-top: auto !important;
+    padding-top: 2rem;
+    flex-shrink: 0;
 }

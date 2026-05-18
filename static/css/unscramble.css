@@ -8,14 +8,16 @@
 /* HEADER */
 
 .game-header {
+    margin-bottom: 1rem;
+}
+
+.game-header-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-
-    margin-bottom: 2rem;
-
-    flex-wrap: wrap;
+    align-items: center;           /* Centra verticalmente badge y título */
+    justify-content: space-between; /* Badge a la izquierda, título a la derecha */
+    gap: 1rem;                /* distancia mínima entre los elementos */
+    flex-wrap: wrap;          /* evita que se desborden en móvil */
+    margin-bottom: 0;
 }
 
 .game-badge {
@@ -32,7 +34,7 @@
 
     font-weight: 600;
 
-    margin-bottom: 1rem;
+    margin-bottom: 0;
 }
 
 .game-title {
@@ -42,87 +44,44 @@
 
     color: #0f172a;
 
-    margin-bottom: 0.7rem;
-}
-
-.game-subtitle {
-    color: #64748b;
-    font-size: 1.05rem;
+    margin-bottom: 0;
 }
 
 /* ATTEMPTS */
 
-.attempts-card {
-    width: 120px;
-    height: 120px;
-
-    border-radius: 28px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #1d4ed8
-        );
-
-    color: white;
-
-    display: flex;
-    flex-direction: column;
+.attempts-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-
-    box-shadow:
-        0 20px 35px rgba(37,99,235,0.25);
-}
-
-.attempts-card i {
-    font-size: 1.4rem;
-    margin-bottom: 0.3rem;
-}
-
-.attempts-card span {
-    font-size: 2rem;
-    font-weight: 800;
-}
-
-.attempts-card small {
-    opacity: 0.85;
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+    padding: 0.8rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 700;
 }
 
 /* CARD */
 
 .game-card {
     background: rgba(255,255,255,0.78);
-
     backdrop-filter: blur(14px);
-
     border-radius: 32px;
-
     padding: 2rem;
-
     border: 1px solid rgba(255,255,255,0.5);
-
     box-shadow:
         0 20px 40px rgba(15,23,42,0.08);
+    margin-bottom: 0;
 }
 
 /* INSTRUCTIONS */
 
 .instructions-box {
     background: #eff6ff;
-
     border: 1px solid #dbeafe;
-
     color: #1d4ed8;
-
     padding: 1rem 1.2rem;
-
-    border-radius: 18px;
-
-    margin-bottom: 2rem;
-
+    border-radius: 18px; 
     font-weight: 500;
+    margin-bottom: 0;
 }
 
 /* LABELS */
