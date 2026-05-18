@@ -1,6 +1,9 @@
 CREATE SCHEMA `proyectomod`;
 USE `proyectomod`;
 
+-- IMPORTAR LOS DATOS DEL CSV (Table Data Import Wizard) A LA TABLA "words"
+-- Intentar con la version word_data_latin1.csv si la version utf8 no funciona
+
 CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(100) NOT NULL UNIQUE,
@@ -22,9 +25,6 @@ CREATE TABLE words (
     difficulty decimal(4,3) DEFAULT '0.500'
 );
 
--- IMPORTAR LOS DATOS DEL CSV (Table Data Import Wizard) A LA TABLA "words"
--- Intentar con la version word_data_latin1.csv si la version utf8 no funciona
-
 CREATE TABLE juegos (
 	id_juego INT AUTO_INCREMENT PRIMARY KEY,
 	nombre VARCHAR(120),
@@ -40,16 +40,31 @@ CREATE TABLE intentos (
     tiempo INT,
     numero_intentos INT,
     fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_intentos_usuario
-        FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario),
-
-    CONSTRAINT fk_intentos_palabra
-        FOREIGN KEY (fk_palabra) REFERENCES words(id_word),
-
-    CONSTRAINT fk_intentos_juego
-        FOREIGN KEY (fk_juego) REFERENCES juegos(id_juego)
+    CONSTRAINT fk_intentos_usuario FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario),
+    CONSTRAINT fk_intentos_palabra FOREIGN KEY (fk_palabra) REFERENCES words(id_word),
+    CONSTRAINT fk_intentos_juego FOREIGN KEY (fk_juego) REFERENCES juegos(id_juego)
 ) ENGINE=InnoDB;
+
+CREATE TABLE meanings (
+    id_meaning   INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fk_word      INT          NOT NULL,
+    def_en       VARCHAR(500) NOT NULL,
+    def_es       VARCHAR(500) NOT NULL,
+    translation  VARCHAR(255) CHARACTER SET 'latin1' COLLATE 'latin1_spanish_ci' NOT NULL,
+    CONSTRAINT fk_meanings_word FOREIGN KEY (fk_word) REFERENCES words(id_word)
+);
+
+CREATE TABLE examples (
+    id_example   INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fk_word      INT          NOT NULL,
+    ex_en        VARCHAR(500) NOT NULL,
+    word_pos_en  TINYINT      NOT NULL DEFAULT 0,
+    ex_es        VARCHAR(500) NOT NULL,
+    word_pos_esp TINYINT      NOT NULL DEFAULT 0,
+    CONSTRAINT fk_examples_word FOREIGN KEY (fk_word) REFERENCES words(id_word)
+);
+
+-- -------------------------	INSERTAR DATOS	--------------------------------
 
 INSERT INTO juegos (nombre, descripcion)
 VALUES 
@@ -58,17 +73,13 @@ VALUES
 ('Quiz', 'Selecciona la palabra correcta. '),
 ('Word Unscramble', 'Reordena la palabra. ');
 
--- ALTER TABLE words ADD difficulty DECIMAL(4,3) DEFAULT 0.500;
--- ALTER TABLE usuarios ADD skill DECIMAL(4,3) DEFAULT 0.500;
-
 -- Normalizar frecuencia y longitud, luego calcular dificultad
 SET @min_freq = (SELECT MIN(frequency) FROM words);
 SET @max_freq = (SELECT MAX(frequency) FROM words);
 SET @min_len  = (SELECT MIN(wlen) FROM words);
 SET @max_len  = (SELECT MAX(wlen) FROM words);
 
--- desactivar safe mode para ejecutar
--- o poner cualquier filtro WHERE prescindible
+-- desactivar safe mode para ejecutar o poner cualquier filtro WHERE prescindible
 UPDATE words 
 SET difficulty = (
     (1.0 - (frequency - @min_freq) / NULLIF(@max_freq - @min_freq, 0)) 
