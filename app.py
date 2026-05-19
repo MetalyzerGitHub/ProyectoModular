@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, render_template, request, redirect, session, flash, url_for
+from flask import Flask, render_template, request, redirect, session, flash, url_for, g
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -12,12 +12,27 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-con = mysql.connector.connect(
-    host=os.getenv("MYSQLHOST"),
-    user=os.getenv("MYSQLUSER"),
-    password=os.getenv("MYSQLPASSWORD"),
-    database=os.getenv("MYSQLDATABASE")
-)
+db_config = {
+    "host":     os.getenv("MYSQLHOST"),
+    "port":     int(os.getenv("MYSQLPORT", 3306)),
+    "user":     os.getenv("MYSQLUSER"),
+    "password": os.getenv("MYSQLPASSWORD"),
+    "database": os.getenv("MYSQLDATABASE"),
+}
+
+
+def get_db():
+    if "db" not in g:
+        g.db = mysql.connector.connect(**db_config)
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(e=None):
+    db = g.pop("db", None)
+    if db and db.is_connected():
+        db.close()
+
 
 # =============================================================
 # MOTOR DE APRENDIZAJE ADAPTATIVO  (IRT + K-factor dinámico)
@@ -56,7 +71,7 @@ def dynamic_k(attempt_count: int) -> float:
 
 
 def get_user_attempt_count(user_id: int) -> int:
-    cursor = con.cursor()
+    cursor = get_db().cursor()
     cursor.execute(
         "SELECT COUNT(*) FROM intentos WHERE fk_usuario = %s", (user_id,)
     )
@@ -67,7 +82,8 @@ def get_user_attempt_count(user_id: int) -> int:
 
 def update_user_skill(user_id: int, word_difficulty: float, success: bool):
     word_difficulty = float(word_difficulty)
-    cursor = con.cursor()
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute(
         "SELECT skill FROM usuarios WHERE id_usuario = %s", (user_id,)
     )
@@ -89,7 +105,7 @@ def update_user_skill(user_id: int, word_difficulty: float, success: bool):
         "UPDATE usuarios SET skill = %s WHERE id_usuario = %s",
         (new_skill, user_id)
     )
-    con.commit()
+    db.commit()
     cursor.close()
 
 
@@ -102,7 +118,8 @@ SEARCH_WINDOW = 0.35
 
 
 def select_adaptive_word(user_id: int, exclude_ids: set = None):
-    cursor = con.cursor(dictionary=True)
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
     cursor.execute(
         "SELECT skill FROM usuarios WHERE id_usuario = %s", (user_id,)
     )
@@ -143,7 +160,7 @@ def select_adaptive_word(user_id: int, exclude_ids: set = None):
     """
     params = [GAUSS_K, skill, user_id, lower, upper] + exclude_params
 
-    cursor = con.cursor(dictionary=True)
+    cursor = db.cursor(dictionary=True)
     cursor.execute(query, params)
     word = cursor.fetchone()
     cursor.close()
@@ -155,7 +172,8 @@ def select_adaptive_word(user_id: int, exclude_ids: set = None):
 
 
 def random_word_excluding(exclude_ids: set = None):
-    cursor = con.cursor(dictionary=True)
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
     if exclude_ids:
         placeholders = ", ".join(["%s"] * len(exclude_ids))
         cursor.execute(
@@ -177,7 +195,7 @@ def random_word():
 
 
 def get_word_by_id(word_id: int):
-    cursor = con.cursor(dictionary=True)
+    cursor = get_db().cursor(dictionary=True)
     cursor.execute("SELECT * FROM words WHERE id_word = %s", (word_id,))
     word = cursor.fetchone()
     cursor.close()
@@ -192,7 +210,7 @@ def get_word_by_id(word_id: int):
 
 def get_word_translation(word_id: int) -> str:
     """Obtiene la primera traducción desde la tabla meanings."""
-    cursor = con.cursor(dictionary=True)
+    cursor = get_db().cursor(dictionary=True)
     cursor.execute(
         "SELECT translation FROM meanings WHERE fk_word = %s LIMIT 1",
         (word_id,)
@@ -204,7 +222,7 @@ def get_word_translation(word_id: int) -> str:
 
 def get_word_example(word_id: int):
     """Obtiene el primer ejemplo desde la tabla examples, o None."""
-    cursor = con.cursor(dictionary=True)
+    cursor = get_db().cursor(dictionary=True)
     cursor.execute(
         "SELECT ex_en, word_pos_en, ex_es, word_pos_esp "
         "FROM examples WHERE fk_word = %s LIMIT 1",
@@ -286,12 +304,13 @@ def get_game_id(cursor, game_name: str):
 
 
 def increment_user_level(user_id: int, amount: float = 0.1):
-    cursor = con.cursor()
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute(
         "UPDATE usuarios SET nivel = nivel + %s WHERE id_usuario = %s",
         (amount, user_id)
     )
-    con.commit()
+    db.commit()
     cursor.close()
 
 
@@ -309,7 +328,8 @@ def register():
     password = request.form["password"]
     cursor = None
     try:
-        cursor = con.cursor()
+        db = get_db()
+        cursor = db.cursor()
         cursor.execute(
             "SELECT id_usuario FROM usuarios WHERE nombre_usuario = %s", (nombre,)
         )
@@ -321,13 +341,15 @@ def register():
             "INSERT INTO usuarios (nombre_usuario, contrasena_hash) VALUES (%s, %s)",
             (nombre, hash_password)
         )
-        con.commit()
+        db.commit()
         flash("Cuenta creada correctamente. Ahora puedes iniciar sesión.", "success")
     except Exception as e:
         print(f"Error en registro: {e}")
         flash("Error al crear la cuenta. Intenta de nuevo.", "error")
-        if con:
-            con.rollback()
+        try:
+            get_db().rollback()
+        except Exception:
+            pass
     finally:
         if cursor:
             cursor.close()
@@ -340,7 +362,7 @@ def login():
     password = request.form["password"]
     cursor = None
     try:
-        cursor = con.cursor()
+        cursor = get_db().cursor()
         cursor.execute(
             "SELECT id_usuario, nombre_usuario, contrasena_hash "
             "FROM usuarios WHERE nombre_usuario = %s",
@@ -367,7 +389,7 @@ def login():
 def obtener_nivel():
     cursor = None
     try:
-        cursor = con.cursor()
+        cursor = get_db().cursor()
         cursor.execute(
             "SELECT nivel FROM usuarios WHERE id_usuario = %s",
             (session["user_id"],)
@@ -644,7 +666,8 @@ def hangman_play():
 
         cursor_db = None
         try:
-            cursor_db = con.cursor()
+            db = get_db()
+            cursor_db = db.cursor()
             game_id = get_game_id(cursor_db, "Hangman")
             if game_id:
                 cursor_db.execute(
@@ -654,7 +677,7 @@ def hangman_play():
                     (session["user_id"], session["word_id"], game_id,
                      won, int(elapsed), attempts_used)
                 )
-                con.commit()
+                db.commit()
                 update_user_skill(
                     session["user_id"],
                     float(session.get("word_difficulty", 0.5)),
@@ -664,7 +687,10 @@ def hangman_play():
                     increment_user_level(session["user_id"])
         except Exception as e:
             print(f"Error insertando intento Hangman: {e}")
-            con.rollback()
+            try:
+                get_db().rollback()
+            except Exception:
+                pass
         finally:
             if cursor_db:
                 cursor_db.close()
@@ -789,7 +815,8 @@ def match_play():
 
         cursor_db = None
         try:
-            cursor_db = con.cursor()
+            db = get_db()
+            cursor_db = db.cursor()
             game_id = get_game_id(cursor_db, "Match")
             if game_id:
                 for w, r in zip(words, results):
@@ -805,10 +832,13 @@ def match_play():
                     )
                     if r["is_correct"]:
                         increment_user_level(session["user_id"])
-                con.commit()
+                db.commit()
         except Exception as e:
             print(f"Error insertando intentos Match: {e}")
-            con.rollback()
+            try:
+                get_db().rollback()
+            except Exception:
+                pass
         finally:
             if cursor_db:
                 cursor_db.close()
@@ -870,7 +900,7 @@ def quiz():
     example = get_word_example(correct_word["id_word"])
 
     part = correct_word["part_of_speech"]
-    cursor = con.cursor(dictionary=True)
+    cursor = get_db().cursor(dictionary=True)
     cursor.execute(
         """SELECT * FROM words
            WHERE part_of_speech = %s AND id_word != %s
@@ -915,7 +945,7 @@ def quiz_answer():
     correct  = session.get("quiz_correct")
     is_correct = selected == correct
 
-    cursor = con.cursor(dictionary=True)
+    cursor = get_db().cursor(dictionary=True)
     option_ids = session.get("quiz_option_ids", [])
     placeholders = ", ".join(["%s"] * len(option_ids))
     cursor.execute(
@@ -945,7 +975,8 @@ def quiz_answer():
 
     cursor_db = None
     try:
-        cursor_db = con.cursor()
+        db = get_db()
+        cursor_db = db.cursor()
         game_id = get_game_id(cursor_db, "Quiz")
         if game_id:
             word_id = session.get("quiz_word_id")
@@ -957,13 +988,16 @@ def quiz_answer():
                 (session["user_id"], word_id, game_id,
                  is_correct, int(elapsed), 1)
             )
-            con.commit()
+            db.commit()
             update_user_skill(session["user_id"], difficulty, is_correct)
             if is_correct:
                 increment_user_level(session["user_id"])
     except Exception as e:
         print(f"Error insertando intento Quiz: {e}")
-        con.rollback()
+        try:
+            get_db().rollback()
+        except Exception:
+            pass
     finally:
         if cursor_db:
             cursor_db.close()
@@ -1073,7 +1107,8 @@ def unscramble_surrender():
     if not session.get("leccion_result_recorded"):
         cursor_db = None
         try:
-            cursor_db = con.cursor()
+            db = get_db()
+            cursor_db = db.cursor()
             game_id = get_game_id(cursor_db, "Word Unscramble")
             if game_id:
                 word_id    = session.get("uns_word_id")
@@ -1085,11 +1120,14 @@ def unscramble_surrender():
                     (session["user_id"], word_id, game_id,
                      False, int(elapsed), total_att)
                 )
-                con.commit()
+                db.commit()
                 update_user_skill(session["user_id"], difficulty, False)
         except Exception as e:
             print(f"Error insertando intento Unscramble (surrender): {e}")
-            con.rollback()
+            try:
+                get_db().rollback()
+            except Exception:
+                pass
         finally:
             if cursor_db:
                 cursor_db.close()
@@ -1167,7 +1205,8 @@ def unscramble_check():
 
         cursor_db = None
         try:
-            cursor_db = con.cursor()
+            db = get_db()
+            cursor_db = db.cursor()
             game_id = get_game_id(cursor_db, "Word Unscramble")
             if game_id:
                 word_id    = session.get("uns_word_id")
@@ -1179,13 +1218,16 @@ def unscramble_check():
                     (session["user_id"], word_id, game_id,
                      is_correct, int(elapsed), attempts_used)
                 )
-                con.commit()
+                db.commit()
                 update_user_skill(session["user_id"], difficulty, is_correct)
                 if is_correct:
                     increment_user_level(session["user_id"])
         except Exception as e:
             print(f"Error insertando intento Unscramble: {e}")
-            con.rollback()
+            try:
+                get_db().rollback()
+            except Exception:
+                pass
         finally:
             if cursor_db:
                 cursor_db.close()
