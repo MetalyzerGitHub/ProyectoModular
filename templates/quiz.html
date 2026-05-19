@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="meaning-word">
-                    “{{ meaning }}”
+                    "{{ meaning }}"
                 </div>
             </div>
 
@@ -206,6 +206,37 @@
 
                     {% endfor %}
                 </div>
+
+                <!-- EJEMPLOS (ambos idiomas, con la palabra destacada) -->
+                {% if example_en or example_es %}
+                    <div class="examples-section">
+
+                        {% if example_en %}
+                            <div class="example-result-box">
+                                <div class="example-result-label">
+                                    <i class="fas fa-quote-left me-2"></i>
+                                    Ejemplo en inglés
+                                </div>
+                                <div class="example-result-text">
+                                    {{ example_en | safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if example_es %}
+                            <div class="example-result-box">
+                                <div class="example-result-label">
+                                    <i class="fas fa-language me-2"></i>
+                                    Ejemplo en español
+                                </div>
+                                <div class="example-result-text">
+                                    {{ example_es | safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                {% endif %}
 
                 <div class="button-container">
 

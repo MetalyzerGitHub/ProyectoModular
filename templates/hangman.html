@@ -41,16 +41,19 @@
                     {{ attempts }} intentos
                 </div>
             </div>
+
+            <!-- EJEMPLO EN INGLÉS (censurado, visible durante el juego) -->
+            {% if example_en %}
+                <div class="example-box mt-3">
+                    <span class="example-label">
+                        <i class="fas fa-quote-left me-1"></i>
+                        Ejemplo
+                    </span>
+                    <span class="example-text">{{ example_en }}</span>
+                </div>
+            {% endif %}
+
             <br>
-
-            <!-- IMAGE -->
-            <!-- <div class="game-image">
-
-                <img
-                    src="{{ url_for('static', filename=img_path) }}"
-                    alt="Estado del ahorcado">
-
-            </div> -->
 
             <!-- WORD -->
             <div class="word-box">
@@ -184,6 +187,19 @@
                     </p>
 
                 </div>
+
+                <!-- EJEMPLO EN ESPAÑOL (destacado, al terminar) -->
+                {% if example_es %}
+                    <div class="example-result-box">
+                        <div class="example-result-label">
+                            <i class="fas fa-language me-2"></i>
+                            Ejemplo en español
+                        </div>
+                        <div class="example-result-text">
+                            {{ example_es | safe }}
+                        </div>
+                    </div>
+                {% endif %}
 
                 <!-- BUTTONS -->
                 <div class="button-container">

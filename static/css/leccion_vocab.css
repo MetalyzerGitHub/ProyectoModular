@@ -1,0 +1,206 @@
+/* WRAPPER */
+
+.vocab-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+
+.vocab-header {
+    margin-bottom: 1rem;
+}
+
+.vocab-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.game-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    padding: 0.7rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.vocab-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0;
+}
+
+/* CARD */
+
+.vocab-card {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px);
+    border-radius: 32px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+/* INFO ROW */
+
+.vocab-info-row {
+    margin-bottom: 2rem;
+}
+
+.instructions-box {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1d4ed8;
+    padding: 1rem 1.2rem;
+    border-radius: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* WORD GRID */
+
+.word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+}
+
+/* WORD CARD */
+
+.word-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.word-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.word-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.word-spelling {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.02em;
+}
+
+.word-pos-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.word-translation {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.4;
+}
+
+/* BUTTONS */
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.btn-primary-custom,
+.btn-outline-custom {
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    border: none;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(37, 99, 235, 0.25);
+    color: white;
+}
+
+.btn-outline-custom {
+    border: 2px solid #dbeafe;
+    color: #1d4ed8;
+    background: white;
+}
+
+.btn-outline-custom:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .vocab-card {
+        padding: 1.5rem;
+    }
+
+    .vocab-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .word-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .word-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Vocabulario de Hoy · LexiQuest{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/leccion_vocab.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl py-4">
+
+    <div class="vocab-wrapper">
+
+        <!-- HEADER -->
+        <div class="vocab-header">
+            <div class="vocab-header-row">
+                <div class="game-badge">
+                    <i class="fas fa-bolt me-2"></i>
+                    Lección Rápida
+                </div>
+                <h1 class="vocab-title">
+                    <i class="fas fa-book-open me-2"></i>
+                    Vocabulario de Hoy
+                </h1>
+            </div>
+        </div>
+
+        <!-- INFO CARD -->
+        <div class="vocab-card">
+
+            <!-- INSTRUCTIONS -->
+            <div class="vocab-info-row">
+                <div class="instructions-box">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Repasa estas palabras antes de comenzar. Las encontrarás
+                    en los <strong>{{ num_games }} minijuegos</strong> de tu lección.
+                </div>
+            </div>
+
+            <!-- WORD GRID -->
+            <div class="word-grid">
+
+                {% for item in vocab %}
+
+                    <div class="word-card">
+
+                        <div class="word-card-top">
+
+                            <span class="word-spelling">
+                                {{ item.spelling }}
+                            </span>
+
+                            {% if item.part_of_speech %}
+                                <span class="word-pos-badge">
+                                    {{ item.part_of_speech }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="word-translation">
+                            {{ item.translation }}
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="button-container">
+
+                <a href="{{ url_for('leccion_start') }}"
+                   class="btn-primary-custom">
+                    <i class="fas fa-play me-2"></i>
+                    Empezar Lección
+                </a>
+
+                <a href="{{ url_for('leccion_cancel') }}"
+                   onclick="return confirm('¿Cancelar lección?');"
+                   class="btn-outline-custom">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar Lección
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

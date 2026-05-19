@@ -364,3 +364,81 @@
         height: 42px;
     }
 }
+
+
+/* Caja de ejemplo durante el juego (inglés censurado) */
+.example-box {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 0.9rem 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.example-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.example-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #334155;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Caja de ejemplo al terminar el juego (español destacado) */
+.example-result-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 1.3rem 1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.example-result-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+}
+
+.example-result-text {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* Palabra destacada dentro del ejemplo */
+.example-result-text mark {
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    font-weight: 800;
+    border-radius: 6px;
+    padding: 0 3px;
+    font-style: normal;
+}
+
+/* Sección de ambos ejemplos (quiz) */
+.examples-section {
+    margin-bottom: 1.5rem;
+}
+
+/* Utilidad de margen superior */
+.mt-3 {
+    margin-top: 1rem;
+}
