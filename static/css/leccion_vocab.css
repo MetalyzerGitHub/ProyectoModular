@@ -23,12 +23,14 @@
 .game-badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     background: rgba(37, 99, 235, 0.1);
     color: #2563eb;
     padding: 0.7rem 1.2rem;
     border-radius: 999px;
     font-weight: 600;
     margin-bottom: 0;
+    text-align: center;
 }
 
 .vocab-title {
@@ -36,6 +38,7 @@
     font-weight: 800;
     color: #0f172a;
     margin-bottom: 0;
+    line-height: 1.1;
 }
 
 /* CARD */
@@ -63,6 +66,7 @@
     border-radius: 18px;
     font-weight: 500;
     line-height: 1.5;
+    font-size: 0.98rem;
 }
 
 /* WORD GRID */
@@ -84,7 +88,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+    min-width: 0;
 }
 
 .word-card:hover {
@@ -94,9 +101,9 @@
 
 .word-card-top {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.6rem;
     flex-wrap: wrap;
 }
 
@@ -105,6 +112,11 @@
     font-weight: 800;
     color: #0f172a;
     letter-spacing: 0.02em;
+    line-height: 1.2;
+
+    /* evita overflow en palabras largas */
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .word-pos-badge {
@@ -118,13 +130,17 @@
     border-radius: 999px;
     text-transform: capitalize;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .word-translation {
     font-size: 1rem;
     font-weight: 500;
     color: #475569;
-    line-height: 1.4;
+    line-height: 1.5;
+
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 /* BUTTONS */
@@ -146,6 +162,8 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-height: 52px;
 }
 
 .btn-primary-custom {
@@ -171,21 +189,51 @@
     color: #1d4ed8;
 }
 
-/* RESPONSIVE */
+/* TABLETS */
 
 @media (max-width: 768px) {
 
-    .vocab-card {
-        padding: 1.5rem;
+    .container-xl {
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
     }
 
     .vocab-header-row {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+
+    .game-badge {
+        width: fit-content;
+    }
+
+    .vocab-title {
+        font-size: 2rem;
+    }
+
+    .vocab-card {
+        padding: 1.3rem;
+        border-radius: 24px;
+    }
+
+    .instructions-box {
+        padding: 0.95rem 1rem;
+        font-size: 0.95rem;
     }
 
     .word-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .word-card {
+        padding: 1.1rem;
+        border-radius: 20px;
+    }
+
+    .word-spelling {
+        font-size: 1.2rem;
     }
 
     .button-container {
@@ -195,12 +243,85 @@
     .btn-primary-custom,
     .btn-outline-custom {
         width: 100%;
-        justify-content: center;
     }
 }
 
+/* MOBILE */
+
 @media (max-width: 480px) {
+
+    .container-xl {
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+    }
+
+    .vocab-header {
+        margin-bottom: 0.8rem;
+    }
+
+    .game-badge {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .vocab-title {
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    .vocab-card {
+        padding: 1rem;
+        border-radius: 20px;
+    }
+
+    .vocab-info-row {
+        margin-bottom: 1.4rem;
+    }
+
+    .instructions-box {
+        border-radius: 16px;
+        font-size: 0.92rem;
+    }
+
     .word-grid {
         grid-template-columns: 1fr;
+        gap: 0.9rem;
+        margin-bottom: 1.6rem;
+    }
+
+    .word-card {
+        padding: 1rem;
+        border-radius: 18px;
+        gap: 0.5rem;
+    }
+
+    .word-card-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .word-spelling {
+        font-size: 1.1rem;
+    }
+
+    .word-pos-badge {
+        font-size: 0.72rem;
+    }
+
+    .word-translation {
+        font-size: 0.95rem;
+    }
+
+    .button-container {
+        gap: 0.8rem;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        font-size: 0.95rem;
+        padding: 0.85rem 1rem;
+        border-radius: 16px;
     }
 }

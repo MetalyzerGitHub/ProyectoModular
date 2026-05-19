@@ -1,46 +1,169 @@
 {% extends "base.html" %}
 
 {% block title %}Resumen de Lección · LexiQuest{% endblock %}
+
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/leccion_summary.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/leccion_summary.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="summary-container">
-            <h2 class="text-center mb-4"><i class="fas fa-clipboard-check me-2"></i>Resumen de la lección</h2>
-            <table class="table summary-table">
-                <thead>
-                    <tr>
-                        <th>Juego</th>
-                        <th>Resultado</th>
-                        <th>Intentos usados</th>
-                        <th>Tiempo (s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in results %}
-                    <tr>
-                        <td><strong>{{ r.game }}</strong></td>
-                        <td>{{ r.result }}</td>
-                        <td>
-                            {% if r.game == "Ahorcado" or r.game == "Palabra Revuelta" %}
-                                {{ r.attempts_used }} / {{ r.total_attempts }}
-                            {% elif r.game == "Quiz" or r.game == "Emparejar" %}
-                                {{ "1/1" }}
-                            {% endif %}
-                        </td>
-                        <td>{{ r.time }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <div class="text-center mt-3">
-                <p><strong>Tiempo total:</strong> {{ total_time }} segundos</p>
-                <a href="/leccion/finish" class="btn btn-finalizar">
-                    <i class="fas fa-check me-2"></i>Finalizar lección
-                </a>
+
+<div class="container-xl py-4">
+
+    <div class="summary-wrapper">
+
+        <!-- HEADER -->
+        <div class="summary-header">
+
+            <div class="summary-header-row">
+
+                <div class="summary-badge">
+                    <i class="fas fa-bolt me-2"></i>
+                    Lección Rápida
+                </div>
+
+                <h1 class="summary-title">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Resumen de la Lección
+                </h1>
+
             </div>
         </div>
+
+        <!-- CARD -->
+        <div class="summary-card">
+
+            <!-- INFO -->
+            <div class="summary-info-box">
+
+                <i class="fas fa-chart-line me-2"></i>
+
+                Has completado todos los minijuegos de esta lección.
+                Aquí puedes revisar tu desempeño.
+
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+
+                    <div class="stat-label">
+                        Juegos completados
+                    </div>
+
+                    <div class="stat-value">
+                        {{ results|length }}
+                    </div>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+
+                    <div class="stat-label">
+                        Tiempo total
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_time }}s
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-responsive">
+
+                <table class="summary-table">
+
+                    <thead>
+                        <tr>
+                            <th>Juego</th>
+                            <th>Resultado</th>
+                            <th>Intentos</th>
+                            <th>Tiempo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for r in results %}
+
+                        <tr>
+
+                            <td>
+                                <strong>{{ r.game }}</strong>
+                            </td>
+
+                            <td>
+
+                                {% if r.result == "Correcto" or r.result == "Ganado" %}
+                                    <span class="result-badge success-badge">
+                                        <i class="fas fa-check me-1"></i>
+                                        {{ r.result }}
+                                    </span>
+                                {% else %}
+                                    <span class="result-badge fail-badge">
+                                        <i class="fas fa-xmark me-1"></i>
+                                        {{ r.result }}
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if r.game == "Ahorcado" or r.game == "Palabra Revuelta" %}
+                                    {{ r.attempts_used }} / {{ r.total_attempts }}
+
+                                {% elif r.game == "Quiz" or r.game == "Emparejar" %}
+                                    1 / 1
+
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ r.time }}s
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- BUTTON -->
+            <div class="button-container">
+
+                <a href="/leccion/finish"
+                   class="btn-primary-custom">
+
+                    <i class="fas fa-check-circle me-2"></i>
+                    Finalizar lección
+
+                </a>
+
+            </div>
+
+        </div>
     </div>
+</div>
+
 {% endblock %}

@@ -219,6 +219,17 @@ def get_word_translation(word_id: int) -> str:
     cursor.close()
     return row["translation"] if row else ""
 
+def get_word_meaning_es(word_id: int) -> str:
+    """Obtiene la primera traducción desde la tabla meanings."""
+    cursor = get_db().cursor(dictionary=True)
+    cursor.execute(
+        "SELECT def_es FROM meanings WHERE fk_word = %s LIMIT 1",
+        (word_id,)
+    )
+    row = cursor.fetchone()
+    cursor.close()
+    return row["def_es"] if row else ""
+
 
 def get_word_example(word_id: int):
     """Obtiene el primer ejemplo desde la tabla examples, o None."""
@@ -490,10 +501,10 @@ def leccion_vocab():
     for wid in all_ids:
         word = get_word_by_id(wid)
         if word:
-            translation = get_word_translation(wid)
+            definition = get_word_meaning_es(wid)
             vocab.append({
                 "spelling": word["spelling"],
-                "translation": translation,
+                "definition": definition,
                 "part_of_speech": word.get("part_of_speech", ""),
             })
 
