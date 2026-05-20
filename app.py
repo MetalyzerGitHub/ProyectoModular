@@ -483,6 +483,79 @@ def dashboard():
         skill_score=skill_info["score"]
     )
 
+@app.route("/historial")
+def historial():
+    if "usuario" not in session:
+        flash("Inicia sesión primero", "error")
+        return redirect("/")
+
+    page = request.args.get("page", 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    cursor = None
+
+    try:
+        cursor = get_db().cursor(dictionary=True)
+
+        # TOTAL DE INTENTOS
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS total
+            FROM intentos
+            WHERE fk_usuario = %s
+            """,
+            (session["user_id"],)
+        )
+
+        total = cursor.fetchone()["total"]
+        total_pages = max(1, math.ceil(total / per_page))
+
+        # OBTENER INTENTOS
+        cursor.execute(
+            """
+            SELECT
+                w.spelling,
+                j.nombre AS juego,
+                i.correcto,
+                i.tiempo,
+                i.fecha_creacion
+            FROM intentos i
+            INNER JOIN words w
+                ON i.fk_palabra = w.id_word
+            INNER JOIN juegos j
+                ON i.fk_juego = j.id_juego
+            WHERE i.fk_usuario = %s
+            ORDER BY i.fecha_creacion DESC
+            LIMIT %s OFFSET %s
+            """,
+            (session["user_id"], per_page, offset)
+        )
+
+        intentos = cursor.fetchall()
+
+        # Convertir segundos → minutos
+        for intento in intentos:
+            segundos = intento["tiempo"] or 0
+            intento["minutos"] = round(segundos / 60, 1)
+
+        return render_template(
+            "historial.html",
+            usuario=session["usuario"],
+            intentos=intentos,
+            current_page=page,
+            total_pages=total_pages
+        )
+
+    except Exception as e:
+        print(f"Error cargando historial: {e}")
+        flash("No se pudo cargar el historial", "error")
+        return redirect("/dashboard")
+
+    finally:
+        if cursor:
+            cursor.close()
+
 
 @app.route("/perfil")
 def perfil():

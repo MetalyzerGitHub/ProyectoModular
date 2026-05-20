@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+Historial · LexiQuest
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/historial.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xl py-4">
+
+    <div class="historial-wrapper">
+
+        <!-- HEADER -->
+        <div class="historial-header">
+
+            <div>
+                <h2 class="historial-title">
+                    <i class="fas fa-clock-rotate-left me-2"></i>
+                    Historial de Intentos
+                </h2>
+
+                <p class="historial-subtitle">
+                    Revisa tu progreso reciente.
+                </p>
+            </div>
+
+            
+
+        </div>
+
+        {% if intentos %}
+
+        <!-- DESKTOP TABLE -->
+        <div class="table-responsive d-none d-md-block">
+
+            <table class="table historial-table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Palabra</th>
+                        <th>Juego</th>
+                        <th>Resultado</th>
+                        <th>Tiempo</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for intento in intentos %}
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ intento.spelling }}
+                        </td>
+
+                        <td>
+                            <span class="game-pill">
+                                <i class="fas fa-gamepad me-1"></i>
+                                {{ intento.juego }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="
+                                resultado-badge
+                                {{ 'resultado-correcto'
+                                    if intento.correcto
+                                    else 'resultado-fallido' }}
+                            ">
+                                {{ 'Correcto'
+                                    if intento.correcto
+                                    else 'Fallido' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ intento.minutos }} min
+                        </td>
+
+                        <td>
+                            {{ intento.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MOBILE CARDS -->
+        <div class="d-md-none mobile-history">
+
+            {% for intento in intentos %}
+
+            <div class="history-card">
+
+                <div class="history-top">
+
+                    <div class="history-word">
+                        {{ intento.spelling }}
+                    </div>
+
+                    <span class="
+                        resultado-badge
+                        {{ 'resultado-correcto'
+                            if intento.correcto
+                            else 'resultado-fallido' }}
+                    ">
+                        {{ 'Correcto'
+                            if intento.correcto
+                            else 'Fallido' }}
+                    </span>
+
+                </div>
+
+                <div class="history-info">
+                    <i class="fas fa-gamepad"></i>
+                    {{ intento.juego }}
+                </div>
+
+                <div class="history-info">
+                    <i class="fas fa-clock"></i>
+                    {{ intento.minutos }} min
+                </div>
+
+                <div class="history-info">
+                    <i class="fas fa-calendar"></i>
+                    {{ intento.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-wrapper">
+
+            {% if current_page > 1 %}
+            <a class="pagination-btn"
+               href="{{ url_for('historial', page=current_page-1) }}">
+
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+
+                <a class="
+                    pagination-btn
+                    {{ 'active' if p == current_page else '' }}
+                "
+                href="{{ url_for('historial', page=p) }}">
+
+                    {{ p }}
+                </a>
+
+            {% endfor %}
+
+            {% if current_page < total_pages %}
+            <a class="pagination-btn"
+               href="{{ url_for('historial', page=current_page+1) }}">
+
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-history">
+
+            <i class="fas fa-book-open"></i>
+
+            <h4>
+                Aún no hay intentos registrados
+            </h4>
+
+            <p>
+                Juega algunas actividades para comenzar a generar historial.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+        <a href="/dashboard"
+            class="btn btn-regresar">
+
+            <i class="fas fa-arrow-left me-2"></i>
+            Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
