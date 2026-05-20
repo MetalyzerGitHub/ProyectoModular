@@ -46,7 +46,7 @@
 
 /* CARD */
 
-.summary-card {
+.summary-card { 
     background: rgba(255,255,255,0.78);
 
     backdrop-filter: blur(14px);
@@ -177,7 +177,7 @@
 }
 
 .summary-table tbody td {
-    padding: 1.2rem 1rem;
+    padding: 1.2rem 1rem; 
 
     color: #0f172a;
 
@@ -215,6 +215,12 @@
     background: rgba(34,197,94,0.15);
 
     color: #15803d;
+}
+
+.warning-badge {
+    background: rgba(234, 179, 8, 0.15);
+
+    color: #ca8a04;
 }
 
 .fail-badge {

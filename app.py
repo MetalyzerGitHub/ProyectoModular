@@ -414,6 +414,55 @@ def obtener_nivel():
             cursor.close()
     return float(result[0]) if result and result[0] is not None else 0.0
 
+def obtener_skill_info():
+    cursor = None
+
+    try:
+        cursor = get_db().cursor()
+
+        # skill actual
+        cursor.execute(
+            """
+            SELECT skill
+            FROM usuarios
+            WHERE id_usuario = %s
+            """,
+            (session["user_id"],)
+        )
+
+        skill_result = cursor.fetchone()
+
+        # cantidad de palabras jugadas
+        cursor.execute(
+            """
+            SELECT COUNT(DISTINCT fk_palabra)
+            FROM intentos
+            WHERE fk_usuario = %s
+            """,
+            (session["user_id"],)
+        )
+
+        count_result = cursor.fetchone()
+
+    except Exception as e:
+        print(f"Error obteniendo skill: {e}")
+        return {
+            "show": False,
+            "score": 0
+        }
+
+    finally:
+        if cursor:
+            cursor.close()
+
+    skill = float(skill_result[0]) if skill_result else 0.5
+    attempts_count = int(count_result[0]) if count_result else 0
+
+    return {
+        "show": attempts_count >= 5,
+        "score": int(skill * 1000)
+    }
+
 
 @app.route("/dashboard")
 def dashboard():
@@ -422,12 +471,16 @@ def dashboard():
         return redirect("/")
     nivel_decimal = obtener_nivel()
     nivel = int(nivel_decimal)
+
+    skill_info = obtener_skill_info()
     return render_template(
         "dashboard.html",
         usuario=session["usuario"],
         nivel=nivel,
         progreso=int((nivel_decimal - nivel) * 100),
-        nivel_siguiente=nivel + 1
+        nivel_siguiente=nivel + 1,
+        skill_visible=skill_info["show"],
+        skill_score=skill_info["score"]
     )
 
 

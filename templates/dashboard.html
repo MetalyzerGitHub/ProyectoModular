@@ -37,6 +37,20 @@
 
                     {{ progreso }}% al Nivel {{ nivel_siguiente }}
                 </span>
+
+                {% if skill_visible %}
+                    <div class="skill-container">
+                        <div class="skill-card">
+                            <div class="skill-label">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Rendimiento Actual
+                            </div>
+                            <div class="skill-score">
+                                {{ skill_score }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             <button class="btn btn-leccion"
@@ -279,6 +293,27 @@
 
                 <span class="carousel-control-next-icon"></span>
             </button>
+
+            <div class="carousel-indicators custom-indicators">
+                <button type="button"
+                        data-bs-target="#gamesCarousel"
+                        data-bs-slide-to="0"
+                        class="active">
+                </button>
+                <button type="button"
+                        data-bs-target="#gamesCarousel"
+                        data-bs-slide-to="1">
+                </button>
+                <button type="button"
+                        data-bs-target="#gamesCarousel"
+                        data-bs-slide-to="2">
+                </button>
+                <button type="button"
+                        data-bs-target="#gamesCarousel"
+                        data-bs-slide-to="3">
+                </button>
+            </div>
+
         </div>
 
         <!-- WELCOME -->

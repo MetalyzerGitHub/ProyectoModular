@@ -94,6 +94,53 @@
     }
 }
 
+/* SKILL */
+
+.skill-container {
+    width: 100%;
+}
+
+.skill-card {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+
+    background: rgba(255,255,255,0.72);
+
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255,255,255,0.5);
+
+    border-radius: 22px;
+
+    padding: 0.9rem 1.2rem;
+
+    margin-top: 0.25rem;
+
+    box-shadow:
+        0 10px 25px rgba(15,23,42,0.06);
+}
+
+.skill-label {
+
+    color: #64748b;
+
+    font-weight: 700;
+
+    font-size: 0.95rem;
+}
+
+.skill-score {
+
+    font-size: 1.6rem;
+
+    font-weight: 800;
+
+    color: #2563eb;
+
+    line-height: 1;
+}
 
 /* QUICK LESSON */
 
@@ -172,20 +219,83 @@
 
 /* CAROUSEL */
 
-.carousel-control-prev{
-    width: 10%;
-    left: -10px;
+#gamesCarousel {
+    position: relative;
+
+    padding-bottom: 3.5rem;
 }
+
+/* ARROWS */
+
+.carousel-control-prev,
 .carousel-control-next {
-    width: 10%;
-    right: -10px;
+
+    width: 48px;
+    height: 48px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    opacity: 1;
+}
+
+.carousel-control-prev {
+    left: -8px;
+}
+
+.carousel-control-next {
+    right: -8px;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(37,99,235,0.8);
+
+    width: 48px;
+    height: 48px;
+
     border-radius: 50%;
-    padding: 1.5rem;
+
+    background-size: 45%;
+
+    background-color: rgba(37,99,235,0.92);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 10px 25px rgba(37,99,235,0.25);
+}
+
+/* INDICATORS */
+
+.custom-indicators {
+
+    bottom: 0;
+
+    margin-bottom: 0;
+}
+
+.custom-indicators button {
+
+    width: 10px !important;
+    height: 10px !important;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background-color: rgba(37,99,235,0.25) !important;
+
+    margin: 0 5px !important;
+
+    transition: 0.2s ease;
+}
+
+.custom-indicators .active {
+
+    background-color: #2563eb !important;
+
+    transform: scale(1.25);
 }
 
 .row.g-4,
@@ -193,14 +303,65 @@
     flex: 1 0 auto;
 }
 
-/* MOBILE CAROUSEL FIX */
+/* MOBILE/TABLET CAROUSEL */
+
+@media (max-width: 991px) {
+
+    #gamesCarousel .glass-card {
+
+        width: 78%;
+
+        margin: 0 auto;
+
+        padding: 1.5rem;
+    }
+
+    .carousel-control-prev {
+        left: -4px;
+    }
+
+    .carousel-control-next {
+        right: -4px;
+    }
+}
+
 @media (max-width: 767px) {
 
     #gamesCarousel .glass-card {
-        width: 75%;
-        margin: 0 auto;
+        width: 82%;
     }
 
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+
+        width: 42px;
+        height: 42px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    #gamesCarousel .glass-card {
+
+        width: 86%;
+
+        border-radius: 24px;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+
+        width: 40px;
+        height: 40px;
+    }
+
+    .carousel-control-prev {
+        left: -2px;
+    }
+
+    .carousel-control-next {
+        right: -2px;
+    }
 }
 
 /* El mensaje de bienvenida queda siempre al final */
