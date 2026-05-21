@@ -1034,7 +1034,8 @@ def quiz():
         return redirect(url_for("dashboard"))
 
     # Traducción y ejemplo
-    translation = get_word_translation(correct_word["id_word"])
+    #translation = get_word_translation(correct_word["id_word"])
+    definition = get_word_meaning_es(correct_word["id_word"])
     example = get_word_example(correct_word["id_word"])
 
     part = correct_word["part_of_speech"]
@@ -1069,7 +1070,7 @@ def quiz():
 
     return render_template(
         "quiz.html",
-        meaning=translation,
+        meaning=definition,
         options=options,
         answered=False,
         usuario=session["usuario"],
@@ -1194,6 +1195,7 @@ def unscramble():
     # Traducción y ejemplo
     translation = get_word_translation(word["id_word"])
     example = get_word_example(word["id_word"])
+    meaning = get_word_meaning_es(word["id_word"])
 
     session["uns_word"]              = word["spelling"]
     session["uns_meaning"]           = translation
@@ -1227,6 +1229,7 @@ def unscramble():
         result=None,
         example_en=ex_en_censored,
         example_es=None,
+        definition_es = meaning,
         usuario=session["usuario"],
         leccion_mode=session.get("leccion_mode", False)
     )

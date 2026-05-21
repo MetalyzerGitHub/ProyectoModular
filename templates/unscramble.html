@@ -41,8 +41,7 @@
 
                     <div class="instructions-box">
                         <i class="fas fa-hand-pointer me-2"></i>
-                        Arrastra las letras hacia el área inferior
-                        y ordénalas correctamente.
+                        Haz clic en dos letras para intercambiarlas, o arrástralas para reordenarlas.
                     </div>
                     
                     <div class="attempts-badge">
@@ -53,11 +52,22 @@
                 </div>
 
                 <!-- EJEMPLO EN INGLÉS (censurado) -->
+
+                {% if definition_es %}
+                    <div class="example-box mt-3">
+                        <span class="example-label">
+                            <i class="fas fa-quote-left me-1"></i>
+                            Definicion
+                        </span>
+                        <span class="example-text">{{ definition_es }}</span>
+                    </div>
+                {% endif %}
+                 
                 {% if example_en %}
                     <div class="example-box mt-3">
                         <span class="example-label">
                             <i class="fas fa-quote-left me-1"></i>
-                            Ejemplo
+                            PISTA
                         </span>
                         <span class="example-text">{{ example_en }}</span>
                     </div>
@@ -80,20 +90,6 @@
                                 {{ letter }}
                             </div>
                         {% endfor %}
-                    </div>
-                </div>
-
-                <!-- DROPZONE -->
-                <div class="dropzone-section">
-
-                    <h5 class="section-label">
-                        Tu respuesta
-                    </h5>
-
-                    <div class="drop-zone" id="dropzone">
-                        <span class="text-muted">
-                            Arrastra letras aquí
-                        </span>
                     </div>
                 </div>
 

@@ -1,113 +1,163 @@
-// ===== LÓGICA DE ARRASTRE =====
-let dragged = null;
+(function () {
 
-const dropzone = document.getElementById("dropzone");
-const lettersContainer = document.getElementById("letters");
+    const container = document.getElementById('letters');
+    if (!container) return;
 
-// Hace que una letra sea draggable y registra sus eventos
-function makeDraggable(el, fromDropzone) {
-    el.setAttribute('draggable', 'true');
-    el.style.cursor = 'grab';
+    let selected = null;   // letra seleccionada (clic-clic)
+    let dragged  = null;   // letra en arrastre
 
-    el.addEventListener('dragstart', function(e) {
-        dragged = el;
-        setTimeout(() => el.style.opacity = '0.4', 0);
-    });
 
-    el.addEventListener('dragend', function(e) {
-        el.style.opacity = '1';
-        dragged = null;
-    });
+    // ── PERSISTENCIA DEL ORDEN ──────────────────────────────
 
-    // Reordenar dentro del dropzone: al pasar sobre otra letra
-    if (fromDropzone) {
-        el.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            if (!dragged || dragged === el) return;
-            // Solo reordenar si ambos están en el dropzone
-            if (dropzone.contains(dragged) && dropzone.contains(el)) {
-                const rect = el.getBoundingClientRect();
-                const midX = rect.left + rect.width / 2;
-                if (e.clientX < midX) {
-                    dropzone.insertBefore(dragged, el);
-                } else {
-                    dropzone.insertBefore(dragged, el.nextSibling);
-                }
+    const STORAGE_KEY = 'unscramble_order';
+
+    function saveOrder() {
+        const order = [...container.querySelectorAll('.letter')]
+            .map(el => el.textContent.trim());
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+    }
+
+    function restoreOrder() {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+
+        const saved = JSON.parse(raw);
+        const els   = [...container.querySelectorAll('.letter')];
+
+        // Verificar que el conjunto de letras sea el mismo
+        const sortFn    = arr => [...arr].sort().join('');
+        const current   = sortFn(els.map(el => el.textContent.trim()));
+        const savedSort = sortFn(saved);
+        if (current !== savedSort) {
+            sessionStorage.removeItem(STORAGE_KEY);
+            return;
+        }
+
+        // Construir mapa char → [elementos]
+        const map = {};
+        els.forEach(el => {
+            const ch = el.textContent.trim();
+            (map[ch] = map[ch] || []).push(el);
+        });
+
+        // Reordenar el DOM
+        saved.forEach(ch => {
+            if (map[ch]?.length) {
+                container.appendChild(map[ch].shift());
             }
         });
     }
-}
 
-// Inicializar letras del contenedor original
-document.querySelectorAll('#letters .letter').forEach(el => makeDraggable(el, false));
 
-// --- DROPZONE: recibir letras desde el contenedor original ---
-dropzone.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    dropzone.style.backgroundColor = 'rgba(27, 47, 79, 0.08)';
-});
+    // ── INTERCAMBIO POR CLIC ────────────────────────────────
 
-dropzone.addEventListener('dragleave', function(e) {
-    // Solo quitar el estilo si el cursor salió del dropzone completamente
-    if (!dropzone.contains(e.relatedTarget)) {
-        dropzone.style.backgroundColor = '';
-    }
-});
+    function swapElements(a, b) {
+        const aNext = a.nextSibling;
+        const bNext = b.nextSibling;
 
-dropzone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    dropzone.style.backgroundColor = '';
-
-    if (!dragged) return;
-
-    // Si viene del contenedor original, moverla al dropzone
-    if (lettersContainer.contains(dragged)) {
-        const placeholder = dropzone.querySelector('.text-muted');
-        if (placeholder) placeholder.remove();
-
-        lettersContainer.removeChild(dragged);
-        makeDraggable(dragged, true); // ahora es reordenable
-        dropzone.appendChild(dragged);
-    }
-    // Si ya estaba en el dropzone, el reorden lo maneja el dragover de cada letra
-});
-
-// --- CONTENEDOR ORIGINAL: recibir letras de vuelta desde el dropzone ---
-lettersContainer.addEventListener('dragover', function(e) {
-    e.preventDefault();
-});
-
-lettersContainer.addEventListener('drop', function(e) {
-    e.preventDefault();
-    if (!dragged || !dropzone.contains(dragged)) return;
-
-    dropzone.removeChild(dragged);
-    makeDraggable(dragged, false); // deja de ser reordenable entre sí
-    lettersContainer.appendChild(dragged);
-
-    // Restaurar placeholder si el dropzone quedó vacío
-    if (dropzone.querySelectorAll('.letter').length === 0) {
-        const ph = document.createElement('span');
-        ph.className = 'text-muted';
-        ph.style.opacity = '0.5';
-        ph.textContent = 'Arrastra las letras aquí';
-        dropzone.appendChild(ph);
-    }
-});
-
-// --- Verificar palabra ---
-function prepareWord() {
-    const letters = document.querySelectorAll('#dropzone .letter');
-    let word = '';
-    letters.forEach(l => word += l.innerText.trim());
-
-    if (word.length === 0) {
-        alert('Por favor, ordena las letras en el área inferior');
-        return false;
+        if (aNext === b) {
+            container.insertBefore(b, a);
+        } else if (bNext === a) {
+            container.insertBefore(a, b);
+        } else {
+            container.insertBefore(b, aNext);
+            container.insertBefore(a, bNext);
+        }
     }
 
-    document.getElementById('user_word').value = word;
-    return true;
-}
+    function handleClick(el) {
+        if (selected === el) {
+            // Segundo clic sobre la misma: deseleccionar
+            el.classList.remove('selected');
+            selected = null;
+            return;
+        }
 
-window.prepareWord = prepareWord;
+        if (selected) {
+            swapElements(selected, el);
+            selected.classList.remove('selected');
+            selected = null;
+        } else {
+            selected = el;
+            el.classList.add('selected');
+        }
+    }
+
+
+    // ── REORDENAMIENTO POR ARRASTRE ─────────────────────────
+
+    function handleDragOver(target, e) {
+        e.preventDefault();
+        if (!dragged || dragged === target) return;
+
+        const rect = target.getBoundingClientRect();
+        const mid  = rect.left + rect.width / 2;
+
+        container.insertBefore(
+            dragged,
+            e.clientX < mid ? target : target.nextSibling
+        );
+    }
+
+    // Al soltar sobre el contenedor (espacio vacío al final)
+    container.addEventListener('dragover', e => e.preventDefault());
+    container.addEventListener('drop', function (e) {
+        e.preventDefault();
+        if (dragged && e.target === container) {
+            container.appendChild(dragged);
+        }
+    });
+
+
+    // ── INICIALIZAR CADA LETRA ──────────────────────────────
+
+    function initLetter(el) {
+        el.setAttribute('draggable', 'true');
+
+        el.addEventListener('click', () => handleClick(el));
+
+        el.addEventListener('dragstart', function () {
+            dragged = el;
+            // Cancelar selección pendiente para evitar conflicto
+            if (selected) {
+                selected.classList.remove('selected');
+                selected = null;
+            }
+            setTimeout(() => el.classList.add('dragging'), 0);
+        });
+
+        el.addEventListener('dragend', function () {
+            el.classList.remove('dragging');
+            dragged = null;
+        });
+
+        el.addEventListener('dragover', e => handleDragOver(el, e));
+        el.addEventListener('drop',     e => e.preventDefault());
+    }
+
+    container.querySelectorAll('.letter').forEach(initLetter);
+
+    // Restaurar orden si venimos de un intento fallido
+    restoreOrder();
+
+
+    // ── VERIFICAR PALABRA ───────────────────────────────────
+
+    function prepareWord() {
+        const letters = container.querySelectorAll('.letter');
+        let word = '';
+        letters.forEach(l => (word += l.textContent.trim()));
+
+        if (!word) {
+            alert('No hay letras para verificar');
+            return false;
+        }
+
+        saveOrder();   // persistir para el próximo render (retry)
+        document.getElementById('user_word').value = word;
+        return true;
+    }
+
+    window.prepareWord = prepareWord;
+
+})();

@@ -454,3 +454,21 @@
 .mt-3 {
     margin-top: 1rem;
 }
+
+/* ── ESTADOS DE LETRA ───────────────────────────── */
+
+/* Letra seleccionada (primer clic) */
+.letter.selected {
+    outline: 3px solid #fff;
+    box-shadow:
+        0 0 0 5px #2563eb,
+        0 10px 24px rgba(37, 99, 235, 0.35);
+    transform: translateY(-4px) scale(1.08);
+    z-index: 2;
+}
+
+/* Letra que se está arrastrando */
+.letter.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}

@@ -57,135 +57,78 @@
 
             <!-- WORD -->
             <div class="word-box">
-
                 <div class="word-label">
                     Palabra
                 </div>
-
                 <div class="word-display">
                     {{ display_word }}
                 </div>
-
             </div>
 
             {% if not game_over %}
 
-                <!-- FORM -->
-                <form method="POST"
-                      class="guess-form">
-
-                    <div class="input-group-custom">
-
-                        <input type="text"
-                               name="letter"
-                               maxlength="1"
-                               class="letter-input"
-                               placeholder="Letra"
-                               autocomplete="off"
-                               required>
-
-                        <button type="submit"
-                                class="btn-primary-custom">
-
-                            <i class="fas fa-check me-2"></i>
-                            Intentar
-
-                        </button>
-                    </div>
-
+                <!-- FORM (oculto, enviado por JS) -->
+                <form method="POST" id="hangman-form" class="guess-form" style="display:none;">
+                    <input type="hidden" name="letter" id="hidden-letter">
                 </form>
 
-                <!-- GUESSED -->
-                {% if session["guessed"] %}
-
-                    <div class="guessed-section">
-
-                        <div class="guessed-title">
-                            Letras utilizadas
-                        </div>
-
-                        <div class="guessed-letters">
-
-                            {% for l in session["guessed"] %}
-
-                                <span class="guessed-letter">
-                                    {{ l }}
-                                </span>
-
-                            {% endfor %}
-
-                        </div>
-
+                <!-- TECLADO VIRTUAL -->
+                <div class="keyboard-section">
+                    <div class="keyboard-grid">
+                        {% set guessed = session["guessed"] | default([]) %}
+                        {% for letter in "abcdefghijklmnopqrstuvwxyz" %}
+                            <button
+                                class="key-btn {% if letter in guessed %}key-used{% endif %}"
+                                data-letter="{{ letter }}"
+                                {% if letter in guessed %}disabled{% endif %}
+                            >
+                                {{ letter | upper }}
+                            </button>
+                        {% endfor %}
                     </div>
-
-                {% endif %}
+                </div>
 
                 <!-- BUTTONS -->
                 <div class="button-container">
-
-                    <a href="{{ url_for('hangman_surrender') }}"
-                       class="btn-outline-custom">
-
+                    <a href="{{ url_for('hangman_surrender') }}" class="btn-outline-custom">
                         <i class="fas fa-flag me-2"></i>
                         Rendirse
-
                     </a>
-
                     {% if leccion_mode %}
-
-                        <a href="/leccion/cancel"
-                           onclick="return confirm('¿Cancelar lección?');"
-                           class="btn-outline-custom">
-
+                        <a href="/leccion/cancel" onclick="return confirm('¿Cancelar lección?');" class="btn-outline-custom">
                             <i class="fas fa-times me-2"></i>
                             Cancelar
-
                         </a>
-
                     {% else %}
-
-                        <a href="{{ url_for('dashboard') }}"
-                           class="btn-outline-custom">
-
+                        <a href="{{ url_for('dashboard') }}" class="btn-outline-custom">
                             <i class="fas fa-arrow-left me-2"></i>
                             Dashboard
-
                         </a>
-
                     {% endif %}
-
                 </div>
 
             {% else %}
 
                 <!-- RESULT -->
                 <div class="result-card {% if won %}success-card{% else %}fail-card{% endif %}">
-
                     <div class="result-icon">
-
                         {% if won %}
                             <i class="fas fa-trophy"></i>
                         {% else %}
                             <i class="fas fa-skull"></i>
                         {% endif %}
-
                     </div>
-
                     <h2>
-
                         {% if won %}
                             ¡Ganaste!
                         {% else %}
                             Perdiste
                         {% endif %}
-
                     </h2>
-
                     <p>
                         La palabra era:
                         <strong>{{ word }}</strong>
                     </p>
-
                 </div>
 
                 <!-- EJEMPLO EN ESPAÑOL (destacado, al terminar) -->
@@ -203,45 +146,25 @@
 
                 <!-- BUTTONS -->
                 <div class="button-container">
-
                     {% if leccion_mode %}
-
-                        <a href="/leccion/next"
-                           class="btn-primary-custom">
-
+                        <a href="/leccion/next" class="btn-primary-custom">
                             <i class="fas fa-arrow-right me-2"></i>
                             Continuar
-
                         </a>
-
-                        <a href="/leccion/cancel"
-                           class="btn-outline-custom">
-
+                        <a href="/leccion/cancel" class="btn-outline-custom">
                             <i class="fas fa-times me-2"></i>
                             Cancelar
-
                         </a>
-
                     {% else %}
-
-                        <a href="{{ url_for('hangman') }}"
-                           class="btn-primary-custom">
-
+                        <a href="{{ url_for('hangman') }}" class="btn-primary-custom">
                             <i class="fas fa-rotate-right me-2"></i>
                             Jugar otra vez
-
                         </a>
-
-                        <a href="{{ url_for('dashboard') }}"
-                           class="btn-outline-custom">
-
+                        <a href="{{ url_for('dashboard') }}" class="btn-outline-custom">
                             <i class="fas fa-arrow-left me-2"></i>
                             Dashboard
-
                         </a>
-
                     {% endif %}
-
                 </div>
 
             {% endif %}

@@ -32,34 +32,35 @@
                     </div>
                 </div>
 
-                <span class="text-secondary"
-                      id="progresoTexto">
-
+                <span class="text-secondary" id="progresoTexto">
                     {{ progreso }}% al Nivel {{ nivel_siguiente }}
                 </span>
 
-                {% if skill_visible %}
-                    <div class="skill-container">
-                        <div class="skill-card">
-                            <div class="skill-label">
-                                <i class="fas fa-chart-line me-2"></i>
-                                Rendimiento Actual
-                            </div>
-                            <div class="skill-score">
-                                {{ skill_score }}
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
+                
             </div>
+                
 
-            <button class="btn btn-leccion"
-                    id="leccionRapida">
-
+            <button class="btn btn-leccion" id="leccionRapida">
                 <i class="fas fa-bolt me-2"></i>
                 Lección Rápida
             </button>
+            
         </div>
+
+        {% if skill_visible %}
+            <div class="skill-container">
+                <div class="skill-card">
+                    <div class="skill-label">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Rendimiento Actual
+                    </div>
+                    <div class="skill-score">
+                        {{ skill_score }}
+                    </div>
+                </div>
+            </div>
+            <br>
+        {% endif %}
 
         <!-- TITLE -->
         <h3 class="section-title mb-4">

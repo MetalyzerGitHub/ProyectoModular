@@ -442,3 +442,68 @@
 .mt-3 {
     margin-top: 1rem;
 }
+
+/* ── TECLADO VIRTUAL ────────────────────────────── */
+
+.keyboard-section {
+    margin-bottom: 1.5rem;
+}
+
+.keyboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.key-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 2px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.key-btn:hover:not(:disabled) {
+    background: #dbeafe;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.18);
+}
+
+.key-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Estado: letra ya utilizada */
+.key-btn.key-used,
+.key-btn:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 480px) {
+    .key-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 0.875rem;
+        border-radius: 10px;
+    }
+
+    .keyboard-grid {
+        gap: 0.4rem;
+    }
+}
