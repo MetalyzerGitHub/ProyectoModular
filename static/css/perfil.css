@@ -161,6 +161,7 @@
     padding: 0 2rem 2.5rem;
     display: flex;
     justify-content: center;
+    gap: 1rem;
 }
 
 .btn-primary-custom {
@@ -185,16 +186,117 @@
     color: white;
 }
 
-/* RESPONSIVE */
+/* ── BOTÓN OUTLINE ─────────────────────────────────────────────── */
+
+.btn-outline-custom {
+    background: transparent;
+    border: 2px solid #2563eb;
+    color: #2563eb;
+    padding: 0.95rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-outline-custom:hover {
+    background: #eff6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+    color: #1d4ed8;
+}
+
+/* ── SECCIÓN DE EDICIÓN ────────────────────────────────────────── */
+
+.edit-section {
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.edit-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 1.4rem;
+}
+
+.edit-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 1.1rem;
+}
+
+.edit-group-header i {
+    font-size: 1rem;
+}
+
+.edit-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+}
+
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.edit-field label {
+    color: #64748b;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    color: #0f172a;
+    background: white;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    outline: none;
+}
+
+.edit-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.edit-input::placeholder {
+    color: #94a3b8;
+}
+
+/* Botones del formulario */
+.edit-actions {
+    gap: 0.85rem;
+}
+
+/* ── RESPONSIVE EDICIÓN ────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-    .profile-header {padding: 2.5rem 1.5rem;}
-    .profile-stats {
-        grid-template-columns: 1fr;
+    .edit-section {
         padding: 0 1.5rem 1.5rem;
     }
-    .profile-info {padding: 0 1.5rem 1.5rem;}
-    .profile-actions {padding: 0 1.5rem 2rem;}
 
-    .btn-primary-custom {width: 100%;}
+    .edit-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+        padding: 0 1.5rem 2rem;
+    }
+
+    .btn-outline-custom {
+        width: 100%;
+    }
 }

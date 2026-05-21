@@ -557,20 +557,139 @@ def historial():
             cursor.close()
 
 
+# ── Diccionario de meses en español ──────────────────────────────
+MESES_ES = {
+    1: "enero", 2: "febrero", 3: "marzo", 4: "abril",
+    5: "mayo", 6: "junio", 7: "julio", 8: "agosto",
+    9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
+}
+
+
 @app.route("/perfil")
 def perfil():
     if "usuario" not in session:
         flash("Por favor inicia sesión primero", "error")
         return redirect("/")
+
     nivel_decimal = obtener_nivel()
     nivel = int(nivel_decimal)
+
+    # Obtener fecha de registro
+    fecha_registro = ""
+    cursor = None
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT fecha_creacion FROM usuarios WHERE id_usuario = %s",
+            (session["user_id"],)
+        )
+        row = cursor.fetchone()
+        if row and row["fecha_creacion"]:
+            d = row["fecha_creacion"]
+            fecha_registro = f"{d.day} de {MESES_ES[d.month]}, {d.year}"
+    except Exception as e:
+        print(f"Error obteniendo fecha de registro: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+
+    # Si venimos de un error en el formulario de edición, volver a mostrarlo
+    show_edit = request.args.get("edit", "0") == "1"
+
     return render_template(
         "perfil.html",
         usuario=session["usuario"],
         nivel=nivel,
         progreso=int((nivel_decimal - nivel) * 100),
-        nivel_siguiente=nivel + 1
+        nivel_siguiente=nivel + 1,
+        fecha_registro=fecha_registro,
+        show_edit=show_edit
     )
+
+
+@app.route("/perfil/editar", methods=["POST"])
+def perfil_editar():
+    if "usuario" not in session:
+        flash("Por favor inicia sesión primero", "error")
+        return redirect("/")
+
+    nuevo_nombre      = request.form.get("nuevo_nombre", "").strip()
+    confirmar_nombre  = request.form.get("confirmar_nombre", "").strip()
+    nueva_password    = request.form.get("nueva_password", "").strip()
+    confirmar_password = request.form.get("confirmar_password", "").strip()
+
+    cambiar_nombre   = bool(nuevo_nombre or confirmar_nombre)
+    cambiar_password = bool(nueva_password or confirmar_password)
+
+    # ── Todos los campos vacíos ──────────────────────────────────
+    if not cambiar_nombre and not cambiar_password:
+        flash("Los campos están vacíos.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    # ── Faltan campos por llenar ─────────────────────────────────
+    if cambiar_nombre and not (nuevo_nombre and confirmar_nombre):
+        flash("Faltan campos por llenar.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    if cambiar_password and not (nueva_password and confirmar_password):
+        flash("Faltan campos por llenar.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    # ── Los pares no coinciden ───────────────────────────────────
+    if cambiar_nombre and nuevo_nombre != confirmar_nombre:
+        flash("Los nombres de usuario no coinciden.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    if cambiar_password and nueva_password != confirmar_password:
+        flash("Las contraseñas no coinciden.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    # ── Aplicar cambios ──────────────────────────────────────────
+    cursor = None
+    try:
+        db = get_db()
+        cursor = db.cursor()
+
+        if cambiar_nombre:
+            # Verificar que el nombre no esté ya en uso
+            cursor.execute(
+                "SELECT id_usuario FROM usuarios "
+                "WHERE nombre_usuario = %s AND id_usuario != %s",
+                (nuevo_nombre, session["user_id"])
+            )
+            if cursor.fetchone():
+                flash("Ese nombre de usuario ya está en uso.", "error")
+                return redirect(url_for("perfil", edit=1))
+
+            cursor.execute(
+                "UPDATE usuarios SET nombre_usuario = %s WHERE id_usuario = %s",
+                (nuevo_nombre, session["user_id"])
+            )
+            session["usuario"] = nuevo_nombre
+
+        if cambiar_password:
+            cursor.execute(
+                "UPDATE usuarios SET contrasena_hash = %s WHERE id_usuario = %s",
+                (generate_password_hash(nueva_password), session["user_id"])
+            )
+
+        db.commit()
+        flash("Edición exitosa.", "success")
+
+    except Exception as e:
+        print(f"Error editando perfil: {e}")
+        try:
+            get_db().rollback()
+        except Exception:
+            pass
+        flash("Error al guardar los cambios. Intenta de nuevo.", "error")
+        return redirect(url_for("perfil", edit=1))
+
+    finally:
+        if cursor:
+            cursor.close()
+
+    return redirect(url_for("perfil"))
 
 
 ######## LECCIÓN RÁPIDA ########
