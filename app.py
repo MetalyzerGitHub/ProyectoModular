@@ -490,7 +490,7 @@ def historial():
         return redirect("/")
 
     page = request.args.get("page", 1, type=int)
-    per_page = 10
+    per_page = 5
     offset = (page - 1) * per_page
 
     cursor = None
@@ -535,9 +535,9 @@ def historial():
         intentos = cursor.fetchall()
 
         # Convertir segundos → minutos
+        # Asegurar valor numérico
         for intento in intentos:
-            segundos = intento["tiempo"] or 0
-            intento["minutos"] = round(segundos / 60, 1)
+            intento["tiempo"] = intento["tiempo"] or 0
 
         return render_template(
             "historial.html",
@@ -683,7 +683,8 @@ def _game_route(game_name: str) -> str:
 @app.route("/leccion/cancel")
 def leccion_cancel():
     _clear_leccion_session()
-    return redirect(url_for("dashboard"))
+    next_url = request.args.get("next", url_for("dashboard"))
+    return redirect(next_url)
 
 
 @app.route("/leccion/summary")

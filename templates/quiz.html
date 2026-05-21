@@ -15,18 +15,15 @@
 
         <!-- HEADER -->
         <div class="quiz-header">
-
             <div class="quiz-header-row">
                 <div class="quiz-badge">
                     <i class="fas fa-brain me-2"></i>Minijuego
                 </div>
-
                 <h1 class="quiz-title">
                     <i class="fas fa-question-circle me-2"></i>
                     Quiz
                 </h1>
             </div>
-
         </div>
 
         <!-- CARD -->
@@ -34,19 +31,15 @@
 
             <!-- INSTRUCTIONS -->
             <div class="instructions-box">
-
                 <i class="fas fa-lightbulb me-2"></i>
-
                 Selecciona la palabra que mejor representa el término mostrado.
             </div>
 
             <!-- MEANING -->
             <div class="meaning-box">
-
                 <div class="meaning-label">
                     Significado
                 </div>
-
                 <div class="meaning-word">
                     "{{ meaning }}"
                 </div>
@@ -54,64 +47,40 @@
 
             {% if not answered %}
 
-                <form method="POST"
-                      action="{{ url_for('quiz_answer') }}">
+                <form method="POST" action="{{ url_for('quiz_answer') }}">
 
-                    <input type="hidden"
-                           name="meaning"
-                           value="{{ meaning }}">
-
+                    <input type="hidden" name="meaning" value="{{ meaning }}">
                     <div class="options-container">
-
                         {% for option in options %}
-
                             <label class="option-item">
-
                                 <input type="radio"
                                        name="option"
                                        value="{{ option.id_word }}"
                                        required>
-
                                 <span class="custom-radio"></span>
-
                                 <span class="option-text">
                                     {{ option.spelling }}
                                 </span>
-
                             </label>
-
                         {% endfor %}
-
                     </div>
 
                     <div class="button-container">
-
-                        <button type="submit"
-                                class="btn btn-primary-custom">
-
+                        <button type="submit" class="btn btn-primary-custom">
                             <i class="fas fa-check-circle me-2"></i>
                             Responder
                         </button>
 
                         {% if leccion_mode %}
-
-                            <a href="/leccion/cancel"
-                               onclick="return confirm('¿Cancelar lección?');"
-                               class="btn btn-outline-custom">
-
+                            <a href="/leccion/cancel" onclick="return confirm('¿Cancelar lección?');" class="btn btn-outline-custom">
                                 <i class="fas fa-times me-2"></i>
                                 Cancelar
                             </a>
-
                         {% else %}
-
-                            <a href="{{ url_for('dashboard') }}"
-                               class="btn btn-outline-custom">
-
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-custom">
                                 <i class="fas fa-arrow-left me-2"></i>
                                 Dashboard
                             </a>
-
                         {% endif %}
                     </div>
                 </form>
@@ -122,33 +91,27 @@
                 <div class="result-card {% if is_correct %}success-card{% else %}fail-card{% endif %}">
 
                     <div class="result-icon">
-
                         {% if is_correct %}
                             <i class="fas fa-trophy"></i>
                         {% else %}
                             <i class="fas fa-xmark"></i>
                         {% endif %}
-
                     </div>
 
                     <h2>
-
                         {% if is_correct %}
                             ¡Correcto!
                         {% else %}
                             Incorrecto
                         {% endif %}
-
                     </h2>
 
                     <p>
-
                         {% if is_correct %}
                             Excelente trabajo 🎉
                         {% else %}
                             Sigue practicando 💪
                         {% endif %}
-
                     </p>
                 </div>
 
@@ -158,7 +121,6 @@
                     {% for option in options %}
 
                         <div class="answer-item
-
                             {% if option.id_word == correct %}
                                 answer-correct
                             {% elif option.id_word == selected %}
@@ -171,39 +133,29 @@
                             <div class="d-flex align-items-center gap-3">
 
                                 {% if option.id_word == correct %}
-
                                     <div class="answer-status success-status">
                                         <i class="fas fa-check"></i>
                                     </div>
-
                                 {% elif option.id_word == selected %}
-
                                     <div class="answer-status fail-status">
                                         <i class="fas fa-times"></i>
                                     </div>
-
                                 {% endif %}
-
                                 <span class="answer-word">
                                     {{ option.spelling }}
                                 </span>
                             </div>
 
                             {% if option.id_word == correct %}
-
                                 <span class="answer-badge success-badge">
                                     Correcta
                                 </span>
-
                             {% elif option.id_word == selected %}
-
                                 <span class="answer-badge fail-badge">
                                     Tu respuesta
                                 </span>
-
                             {% endif %}
                         </div>
-
                     {% endfor %}
                 </div>
 
@@ -239,39 +191,24 @@
                 {% endif %}
 
                 <div class="button-container">
-
                     {% if leccion_mode %}
-
-                        <a href="/leccion/next"
-                           class="btn btn-primary-custom">
-
+                        <a href="/leccion/next" class="btn btn-primary-custom">
                             <i class="fas fa-arrow-right me-2"></i>
                             Continuar
                         </a>
-
-                        <a href="/leccion/cancel"
-                           class="btn btn-outline-custom">
-
+                        <a href="/leccion/cancel" class="btn btn-outline-custom">
                             <i class="fas fa-times me-2"></i>
                             Cancelar
                         </a>
-
                     {% else %}
-
-                        <a href="{{ url_for('quiz') }}"
-                           class="btn btn-primary-custom">
-
+                        <a href="{{ url_for('quiz') }}" class="btn btn-primary-custom">
                             <i class="fas fa-rotate-right me-2"></i>
                             Nuevo intento
                         </a>
-
-                        <a href="{{ url_for('dashboard') }}"
-                           class="btn btn-outline-custom">
-
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-custom">
                             <i class="fas fa-arrow-left me-2"></i>
                             Dashboard
                         </a>
-
                     {% endif %}
                 </div>
 
